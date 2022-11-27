@@ -18,8 +18,8 @@ namespace TicketAPI_Data
 
         // User Methods
 
+
         // Ticket Methods
-        // * LIST TEST
         public List<Ticket> getAllTickets(string connectionString)
         {
             string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
@@ -48,8 +48,6 @@ namespace TicketAPI_Data
 
             return result;
         }
-
-        // * DataTable TEST
 
     }
 }
