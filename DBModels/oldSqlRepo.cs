@@ -24,7 +24,6 @@ namespace TicketAPI_Data
 {
     public class oldSqlRepo
     {
-
         // User account methods
         public static bool checkUsername(string username)
         {
@@ -168,18 +167,20 @@ namespace TicketAPI_Data
             connection.Close();
         }
 
-        public static bool checkPending(string query, int id)
+        public static bool checkPending(int ticketId)
         {
             using SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
 
-            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @ticketId;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@ticketId", ticketId);
+
             using SqlDataReader reader = command.ExecuteReader();
 
             return reader.HasRows;
         }
+
 
         // Update Methods (add/process requests)
         public static void addNewTicket(int userId, string username, double amount, string category)
@@ -200,19 +201,7 @@ namespace TicketAPI_Data
             connection.Close();
         }
 
-        public static bool checkPending(int ticketId)
-        {
-            using SqlConnection connection = new SqlConnection(connectionString);
-            connection.Open();
 
-            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @ticketId;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@ticketId", ticketId);
-
-            using SqlDataReader reader = command.ExecuteReader();
-
-            return reader.HasRows;
-        }
 
         public static void updatePendingRequest(string status, int id, string username)
         {

@@ -23,14 +23,25 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // TODO: Finish Read
+// Get all tickets
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connectionString));
 
+// Get one ticket
 app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) =>
 {
-    var response = repo.getTicket(connectionString, ticketId);
+    var response = repo.getTicketById(connectionString, ticketId);
     return (response.Count >= 1) ? Results.Ok() : Results.NotFound();
 
 });
+
+app.MapGet("/tickets/emptickets/{id}", (SqlRepo repo, int userId) =>
+{
+    var response = repo.getAllUserTickets(connectionString, userId);
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
+
+});
+
+
 
 
 
