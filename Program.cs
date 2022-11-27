@@ -19,6 +19,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ? dotnet ef database update
+
 var users = app.MapGet("/users", (SqlRepo repo) => repo.getAllPersons(connvalue));
 
 app.Run();
