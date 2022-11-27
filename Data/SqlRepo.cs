@@ -16,9 +16,6 @@ namespace TicketAPI_Data
     {
         public SqlRepo() { }
 
-        // User Methods
-
-
         // Ticket Methods
         public List<Ticket> getAllTickets(string connectionString)
         {
@@ -48,6 +45,42 @@ namespace TicketAPI_Data
 
             return result;
         }
+
+        public List<Ticket> getTicket(string connectionString, int id)
+        {
+            string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
+
+            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@id", id);
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            List<Ticket> result = new List<Ticket>();
+
+            while (reader.Read())
+            {
+                Ticket ticket = new Ticket();
+                // int ticketId, DateTime submittedOn, string employee_name, string username, double amount, string category
+                ticket.ticketId = (int)reader["ticket_id"];
+                ticket.submittedOn = (DateTime)reader["submitted_on"]; // ? change to DateOnly
+                ticket.employeeName = reader["employee_name"].ToString();
+                ticket.amount = (double?)(decimal)reader["amount"];
+
+                ticket.category = reader["category"].ToString();
+
+                result.Add(ticket);
+            }
+            reader.Close();
+
+            return result;
+        }
+
+
+
+
+        // User Methods
+
 
     }
 }

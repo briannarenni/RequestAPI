@@ -22,7 +22,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// TODO: Finish Read
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connectionString));
+app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) => repo.getTicket(connectionString, ticketId));
 
 // TODO: Replicate
 //creates employee
