@@ -7,6 +7,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<SqlRepo>();
 
+var connectionString = builder.Configuration.GetValue<string>("ConnectionStrings:sqlConnection");
+
 // App instance
 var app = builder.Build();
 
@@ -20,8 +22,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ? dotnet ef database update
-
-var users = app.MapGet("/users", (SqlRepo repo) => repo.getAllPersons(connvalue));
+app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connectionString));
 
 app.Run();
