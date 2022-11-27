@@ -3,16 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TicketAPI_Models
 {
-    public class PersonDbContext : DbContext
+    public class UserDb : DbContext
     {
-        public PersonDbContext(DbContextOptions options)
+        public UserDb(DbContextOptions options)
             : base(options)
         {
+
         }
 
-        protected PersonDbContext()
-        {
-        }
-        public DbSet<Person>? Persons { get; set; } = null!;
+        public DbSet<User>? Users { get; set; } = null!;
     }
 }
