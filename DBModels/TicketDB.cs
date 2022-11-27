@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace TicketAPI_Models
+namespace TicketAPI_DBModels
 {
 
     public class TicketDB : DbContext
     {
-        public TicketDB(DbContextOptions options)
+        public TicketDB(DbContextOptions<TicketDB> options)
             : base(options)
         {
 

@@ -2,18 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using TicketAPI_Data;
 using TicketAPI_Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<UserDB>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
-builder.Services.AddDbContext<TicketDB>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Add logging
-builder.Logging.AddSimpleConsole();
+builder.Services.AddTransient<SqlRepo>();
 
 // App instance
 var app = builder.Build();
@@ -26,6 +18,9 @@ if (app.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-app.MapGet("/", () => "Hello World!");
+app.UseHttpsRedirection();
+
+app.MapGet("/users", (SqlRepo repo) =>
+    repo.getAllPersons(connvalue));
 
 app.Run();
