@@ -5,9 +5,17 @@ using TicketAPI_Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<UserDb>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("myConxStr")));
+builder.Services.AddDbContext<UserDB>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
+builder.Services.AddDbContext<TicketDB>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection")));
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
+// Add logging
+builder.Logging.AddSimpleConsole();
+
+// App instance
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

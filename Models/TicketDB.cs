@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 namespace TicketAPI_Models
 {
 
-    public class TicketDb : DbContext
+    public class TicketDB : DbContext
     {
-        public TicketDb(DbContextOptions options)
+        public TicketDB(DbContextOptions options)
             : base(options)
         {
 
