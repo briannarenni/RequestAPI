@@ -9,11 +9,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ! EMPLOYEE QUERIES
+// static string userTicketsQuery = @"SELECT [ticket_id], [submitted_on], [employee_name], [amount], [category], [status] FROM [Ticket] WHERE submitted_by = @id";
+// static string userPendingQuery = @"SELECT * FROM [View.PendingTickets] WHERE employee_name = @username";
+
+// ! MANAGER QUERIES
+// static string ticketQuery = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
+// static string pendingQuery = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
+// static string singlePendingQuery = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+
+// TODO: Refactor connection string as parameter
+
 namespace TicketAPI_Data
 {
     public class oldSqlRepo
     {
-
 
         // User account methods
         public static bool checkUsername(string username)

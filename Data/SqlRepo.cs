@@ -15,6 +15,9 @@ namespace TicketAPI_Data
     {
         public SqlRepo() { }
 
+        // User Methods
+
+        // Ticket Methods
 
     }
 }

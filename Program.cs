@@ -19,8 +19,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.MapGet("/users", (SqlRepo repo) =>
-    repo.getAllPersons(connvalue));
+var users = app.MapGet("/users", (SqlRepo repo) => repo.getAllPersons(connvalue));
 
 app.Run();
