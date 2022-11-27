@@ -24,7 +24,16 @@ app.UseHttpsRedirection();
 
 // TODO: Finish Read
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connectionString));
-app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) => repo.getTicket(connectionString, ticketId));
+
+app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) =>
+{
+    var response = repo.getTicket(connectionString, ticketId);
+    return (response.Count >= 1) ? Results.Ok() : Results.NotFound();
+
+});
+
+
+
 
 // TODO: Replicate
 //creates employee

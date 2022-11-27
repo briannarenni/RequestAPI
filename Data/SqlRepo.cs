@@ -76,7 +76,18 @@ namespace TicketAPI_Data
             return result;
         }
 
+        public static bool checkPending(string connectionString, int id)
+        {
+            using SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
 
+            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@id", id);
+            using SqlDataReader reader = command.ExecuteReader();
+
+            return reader.HasRows;
+        }
 
 
         // User Methods
