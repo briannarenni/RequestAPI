@@ -22,7 +22,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// TODO: Finish Read
 // Get all tickets
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connectionString));
 
@@ -41,7 +40,20 @@ app.MapGet("/tickets/emptickets/{id}", (SqlRepo repo, int userId) =>
 
 });
 
+// TODO: create ticket
+// app.MapPost("/tickets", (SqlRepo repo, int userID, Ticket ticket) =>
+// {
+//     repo.insertTicket(connectionString, userID, ticket);
+//     return Results.Created($"/tickets/{ticket.Id}", ticket);
+// });
 
+// TODO: update ticket
+//updates specific ticket, only the status is allowed to to be changed
+// app.MapPut("/tickets/{id}", (SQLRepo repo, Employee employee, int ticketId, string status) =>
+// {
+//     repo.updateTicket(employee, ticketId, status, connString);
+//     return Results.NoContent();
+// });
 
 
 

@@ -120,6 +120,8 @@ namespace TicketAPI_Data
             return reader.HasRows;
         }
 
+
+
         // User Methods
 
 
