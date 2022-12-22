@@ -27,7 +27,7 @@ namespace TicketAPI_Data
         // User account methods
         public static bool checkUsername(string username)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
@@ -41,7 +41,7 @@ namespace TicketAPI_Data
 
         public static bool checkPassword(string username, string password)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
@@ -60,7 +60,7 @@ namespace TicketAPI_Data
         public static bool getPerms(string username)
         {
             bool isManager = false;
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT is_manager FROM [User] WHERE username = @username;";
@@ -79,7 +79,7 @@ namespace TicketAPI_Data
 
         public static void addUser(string username, string password)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
             string cmdText = @"INSERT INTO [User] ([username], [password])
                 VALUES (@username, @password);";
@@ -99,7 +99,7 @@ namespace TicketAPI_Data
             int userId = 0;
             bool isManager = false;
 
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT user_id, is_manager FROM [User] WHERE username = @username;";
@@ -122,7 +122,7 @@ namespace TicketAPI_Data
         // Ticket Methods
         public static DataTable getTickets(string query)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(query, connection);
 
             connection.Open();
@@ -145,7 +145,7 @@ namespace TicketAPI_Data
 
         public static DataTable getTickets(string query, int id)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@id", id);
 
@@ -169,7 +169,7 @@ namespace TicketAPI_Data
 
         public static bool checkPending(int ticketId)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @ticketId;";
@@ -185,7 +185,7 @@ namespace TicketAPI_Data
         // Update Methods (add/process requests)
         public static void addNewTicket(int userId, string username, double amount, string category)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"INSERT INTO [Ticket] ([submitted_by], [employee_name], [amount], [category])
@@ -205,7 +205,7 @@ namespace TicketAPI_Data
 
         public static void updatePendingRequest(string status, int id, string username)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"UPDATE [Ticket] SET status = @status WHERE ticket_id = @id;";

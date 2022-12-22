@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 // Old connection string
 // static StreamReader conFile = new System.IO.StreamReader("/Users/briannarene/_code/_tools/connection-strings/request-DB.txt");
-// static string connectionString = conFile.ReadToEnd();
+// static string connString = conFile.ReadToEnd();
 
 // FROM PROGRAM.CS
 // builder.Services.AddDbContext<UserDB>(options =>

@@ -17,11 +17,11 @@ namespace TicketAPI_Data
         public SqlRepo() { }
 
         // Ticket Methods
-        public List<Ticket> getAllTickets(string connectionString)
+        public List<Ticket> getAllTickets(string connString)
         {
             string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
 
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
 
             connection.Open();
@@ -46,11 +46,11 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getAllUserTickets(string connectionString, int userId)
+        public List<Ticket> getAllUserTickets(string connString, int userId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
 
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@userId", userId);
 
@@ -76,11 +76,11 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getTicketById(string connectionString, int id)
+        public List<Ticket> getTicketById(string connString, int id)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
 
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", id);
 
@@ -107,9 +107,9 @@ namespace TicketAPI_Data
         }
 
         // TODO: get all pending and get one pending
-        public static bool getSinglePending(string connectionString, int id)
+        public static bool getSinglePending(string connString, int id)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
 
             string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
