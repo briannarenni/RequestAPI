@@ -16,11 +16,21 @@ namespace TicketAPI_Data
     {
         public SqlRepo() { }
 
-        // Ticket Methods
+        // Return ticket object
+        public Ticket returnTicket(SqlDataReader reader, Ticket ticket)
+        {
+            ticket.ticketId = (int)reader["ticket_id"];
+            ticket.submittedOn = (DateTime)reader["submitted_on"];
+            ticket.employeeName = reader["employee_name"].ToString();
+            ticket.amount = (double?)(decimal)reader["amount"];
+            ticket.category = reader["category"].ToString();
+            return ticket;
+        }
+
+        // Get all tickets
         public List<Ticket> getAllTickets(string connString)
         {
             string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
-
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
 
@@ -31,25 +41,17 @@ namespace TicketAPI_Data
             while (reader.Read())
             {
                 Ticket ticket = new Ticket();
-                // int ticketId, DateTime submittedOn, string employee_name, string username, double amount, string category
-                ticket.ticketId = (int)reader["ticket_id"];
-                ticket.submittedOn = (DateTime)reader["submitted_on"]; // ? change to DateOnly
-                ticket.employeeName = reader["employee_name"].ToString();
-                ticket.amount = (double?)(decimal)reader["amount"];
-
-                ticket.category = reader["category"].ToString();
-
+                returnTicket(reader, ticket);
                 result.Add(ticket);
             }
             reader.Close();
-
             return result;
         }
 
+        // Get all employee's tickets
         public List<Ticket> getAllUserTickets(string connString, int userId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
-
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@userId", userId);
@@ -61,14 +63,7 @@ namespace TicketAPI_Data
             while (reader.Read())
             {
                 Ticket ticket = new Ticket();
-                // int ticketId, DateTime submittedOn, string employee_name, string username, double amount, string category
-                ticket.ticketId = (int)reader["ticket_id"];
-                ticket.submittedOn = (DateTime)reader["submitted_on"]; // ? change to DateOnly
-                ticket.employeeName = reader["employee_name"].ToString();
-                ticket.amount = (double?)(decimal)reader["amount"];
-
-                ticket.category = reader["category"].ToString();
-
+                returnTicket(reader, ticket);
                 result.Add(ticket);
             }
             reader.Close();
@@ -76,6 +71,7 @@ namespace TicketAPI_Data
             return result;
         }
 
+        // Get single ticket
         public List<Ticket> getTicketById(string connString, int id)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
@@ -91,14 +87,7 @@ namespace TicketAPI_Data
             while (reader.Read())
             {
                 Ticket ticket = new Ticket();
-                // int ticketId, DateTime submittedOn, string employee_name, string username, double amount, string category
-                ticket.ticketId = (int)reader["ticket_id"];
-                ticket.submittedOn = (DateTime)reader["submitted_on"]; // ? change to DateOnly
-                ticket.employeeName = reader["employee_name"].ToString();
-                ticket.amount = (double?)(decimal)reader["amount"];
-
-                ticket.category = reader["category"].ToString();
-
+                returnTicket(reader, ticket);
                 result.Add(ticket);
             }
             reader.Close();
@@ -106,8 +95,8 @@ namespace TicketAPI_Data
             return result;
         }
 
-        // TODO: get all pending and get one pending
-        public static bool getSinglePending(string connString, int id)
+        // Check that pending ticket exits
+        public bool checkPendingTickets(string connString, int id)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -120,10 +109,52 @@ namespace TicketAPI_Data
             return reader.HasRows;
         }
 
+        // get all pending
+        public List<Ticket> getPendingTickets(string connString)
+        {
+            string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
+            using SqlConnection connection = new SqlConnection(connString);
+            using SqlCommand command = new SqlCommand(cmdText, connection);
 
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            List<Ticket> result = new List<Ticket>();
+            while (reader.Read())
+            {
+                Ticket ticket = new Ticket();
+                returnTicket(reader, ticket);
+                result.Add(ticket);
+            }
+            reader.Close();
+            return result;
+        }
 
-        // User Methods
+        // Get single pending
+        public List<Ticket> getSinglePending(string connString, int ticketId)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@id", ticketId);
+            using SqlDataReader reader = command.ExecuteReader();
 
+            List<Ticket> result = new List<Ticket>();
+            bool exists = checkPendingTickets(connString, ticketId);
+            if (exists)
+            {
+                connection.Open();
+                while (reader.Read())
+                {
+                    Ticket ticket = new Ticket();
+                    returnTicket(reader, ticket);
+                    result.Add(ticket);
+                }
+                reader.Close();
+            }
+            return result;
+        }
+
+        // TODO: User Methods
 
     }
 }
