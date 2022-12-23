@@ -16,14 +16,24 @@ namespace TicketAPI_Data
     {
         public SqlRepo() { }
 
-        // Return ticket object
-        public Ticket returnTicket(SqlDataReader reader, Ticket ticket)
+        // Returned data will build ticket object
+        private Ticket BuildTicket(SqlDataReader reader)
         {
+            Ticket ticket = new Ticket();
             ticket.ticketId = (int)reader["ticket_id"];
-            ticket.submittedOn = (DateTime)reader["submitted_on"];
+            ticket.submittedOn = Convert.ToDateTime(reader["submitted_on"]).Date;
             ticket.employeeName = reader["employee_name"].ToString();
             ticket.amount = (double?)(decimal)reader["amount"];
             ticket.category = reader["category"].ToString();
+            ticket.status = reader["status"].ToString();
+            if (!reader.IsDBNull("submitted_by"))
+            {
+                ticket.employeeName = reader["submitted_by"].ToString();
+            }
+            if (!reader.IsDBNull("status"))
+            {
+                ticket.status = reader["status"].ToString();
+            }
             return ticket;
         }
 
@@ -40,13 +50,12 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                Ticket ticket = new Ticket();
-                returnTicket(reader, ticket);
-                result.Add(ticket);
+                result.Add(BuildTicket(reader));
             }
             reader.Close();
             return result;
         }
+
 
         // Get all employee's tickets
         public List<Ticket> getAllUserTickets(string connString, int userId)
@@ -62,9 +71,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                Ticket ticket = new Ticket();
-                returnTicket(reader, ticket);
-                result.Add(ticket);
+                result.Add(BuildTicket(reader));
             }
             reader.Close();
 
@@ -86,9 +93,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                Ticket ticket = new Ticket();
-                returnTicket(reader, ticket);
-                result.Add(ticket);
+                result.Add(BuildTicket(reader));
             }
             reader.Close();
 
@@ -119,11 +124,10 @@ namespace TicketAPI_Data
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             List<Ticket> result = new List<Ticket>();
+
             while (reader.Read())
             {
-                Ticket ticket = new Ticket();
-                returnTicket(reader, ticket);
-                result.Add(ticket);
+                result.Add(BuildTicket(reader));
             }
             reader.Close();
             return result;
@@ -145,9 +149,7 @@ namespace TicketAPI_Data
                 connection.Open();
                 while (reader.Read())
                 {
-                    Ticket ticket = new Ticket();
-                    returnTicket(reader, ticket);
-                    result.Add(ticket);
+                    result.Add(BuildTicket(reader));
                 }
                 reader.Close();
             }
