@@ -26,14 +26,7 @@ namespace TicketAPI_Data
             ticket.amount = (double?)(decimal)reader["amount"];
             ticket.category = reader["category"].ToString();
             ticket.status = reader["status"].ToString();
-            if (!reader.IsDBNull("submitted_by"))
-            {
-                ticket.employeeName = reader["submitted_by"].ToString();
-            }
-            if (!reader.IsDBNull("status"))
-            {
-                ticket.status = reader["status"].ToString();
-            }
+
             return ticket;
         }
 

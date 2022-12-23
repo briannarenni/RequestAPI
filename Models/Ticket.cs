@@ -6,9 +6,9 @@ namespace TicketAPI_Models
         public DateTime? submittedOn { get; set; }
         public int? submittedBy { get; set; }
         public string? employeeName { get; set; }
-        public string? status { get; set; }
         public double? amount { get; set; }
         public string? category { get; set; }
+        public string? status { get; set; }
 
         // Constructors
         public Ticket() { }
