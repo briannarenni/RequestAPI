@@ -4,17 +4,13 @@ using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using TicketAPI_Models;
 
 namespace TicketAPI_Data
 {
-    public class SqlRepo
+    public class TicketRepo
     {
-        public SqlRepo() { }
+        public TicketRepo() { }
 
         // Builds ticket objects to add to List<Ticket>
         private Ticket BuildTicket(SqlDataReader reader)
@@ -138,8 +134,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@category", ticket.category);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.NoContent();
-
+            return Results.Created($"/tickets", "Ticket submitted succesfully");
         }
 
         public IResult updateTicketStatus(string connString, string status, int id)
@@ -152,7 +147,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@id", id);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/tickets/{id}", status);
+            return Results.Created($"/tickets/{id}", $"Ticket {id}: {status}");
         }
 
         // TODO: User Methods
