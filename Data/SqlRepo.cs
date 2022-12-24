@@ -51,9 +51,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-
-        // Get all employee's tickets
-        public List<Ticket> getAllUserTickets(string connString, int userId)
+        public List<Ticket> getUserTickets(string connString, int userId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -73,7 +71,6 @@ namespace TicketAPI_Data
             return result;
         }
 
-        // Get single ticket
         public List<Ticket> getTicketById(string connString, int id)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
@@ -95,21 +92,6 @@ namespace TicketAPI_Data
             return result;
         }
 
-        // Check that pending ticket exits
-        public bool checkPendingTickets(string connString, int id)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-
-            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@id", id);
-            using SqlDataReader reader = command.ExecuteReader();
-
-            return reader.HasRows;
-        }
-
-        // get all pending
         public List<Ticket> getPendingTickets(string connString)
         {
             string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
@@ -128,27 +110,65 @@ namespace TicketAPI_Data
             return result;
         }
 
-       // Get single pending ticket
+        // public bool checkPendingTickets(string connString, int id)
+        // {
+        //     using SqlConnection connection = new SqlConnection(connString);
+        //     connection.Open();
+
+        //     string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+        //     using SqlCommand command = new SqlCommand(cmdText, connection);
+        //     command.Parameters.AddWithValue("@id", id);
+        //     using SqlDataReader reader = command.ExecuteReader();
+
+        //     return reader.HasRows;
+        // }
+
         public List<Ticket> getSinglePending(string connString, int ticketId)
         {
             using SqlConnection connection = new SqlConnection(connString);
-            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
+            string cmdText = @"
+                SELECT *
+                FROM [View.PendingTickets]
+                WHERE ticket_id = @id
+                AND (SELECT COUNT(*) FROM [View.PendingTickets] WHERE ticket_id = @id) > 0;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", ticketId);
             using SqlDataReader reader = command.ExecuteReader();
-
             List<Ticket> result = new List<Ticket>();
-            bool exists = checkPendingTickets(connString, ticketId);
-            if (exists)
+            connection.Open();
+            while (reader.Read())
             {
-                connection.Open();
-                while (reader.Read())
-                {
-                    result.Add(BuildTicket(reader));
-                }
-                reader.Close();
+                result.Add(BuildTicket(reader));
             }
+            reader.Close();
             return result;
+        }
+
+        public void addTicket(string connString, Ticket ticket)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"INSERT INTO [Ticket] ([submitted_by], [employee_name], [amount], [category])
+                VALUES (@submittedBy, @employeeName, @amount, @category);";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@submittedBy", ticket.submittedBy);
+            command.Parameters.AddWithValue("@employeeName", ticket.employeeName);
+            command.Parameters.AddWithValue("@amount", ticket.amount);
+            command.Parameters.AddWithValue("@category", ticket.category);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public void updateTicketStatus(string connString, string status, int id)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"UPDATE [Ticket] SET status = @status WHERE ticket_id = @id;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@status", status);
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
+            connection.Close();
         }
 
         // TODO: User Methods
