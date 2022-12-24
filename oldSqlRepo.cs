@@ -24,7 +24,7 @@ namespace TicketAPI_Data
 {
     public class oldSqlRepo
     {
-        // User account methods
+        // * User methods
         public static bool checkUsername(string username)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -117,9 +117,7 @@ namespace TicketAPI_Data
             return (userId, isManager);
         }
 
-
-
-        // Ticket Methods
+        // * Ticket Methods
         public static DataTable getTickets(string query)
         {
             using SqlConnection connection = new SqlConnection(connString);

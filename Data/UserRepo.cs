@@ -6,12 +6,12 @@ using System.Data.SqlClient;
 using System.Linq;
 using TicketAPI_Models;
 
+// TODO: Add number of all/pending tickets to user info
 namespace TicketAPI_Data
 {
     public class UserRepo
     {
         public UserRepo() {}
-
         // TODO: User Methods
         // Builds ticket objects to add to List<Ticket>
         // private Ticket BuildTicket(SqlDataReader reader)

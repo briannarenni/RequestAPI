@@ -149,8 +149,5 @@ namespace TicketAPI_Data
             connection.Close();
             return Results.Created($"/tickets/{id}", $"Ticket {id}: {status}");
         }
-
-        // TODO: User Methods
-
     }
 }

@@ -51,8 +51,12 @@ app.MapGet("/tickets/employee/{id}", (TicketRepo tRepo, int userId) =>
 // * Use in docs: Ticket newTicket = new Ticket(userId, username, amount, category);
 app.MapPost("/tickets", (TicketRepo tRepo, Ticket ticket) => tRepo.addTicket(connString, ticket));
 
+// * Use in docs: status string and int id;
 app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
 
 //TODO: User Methods
+
+
+
 
 app.Run();
