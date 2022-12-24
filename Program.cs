@@ -2,9 +2,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TicketAPI_Data;
+using TicketAPI_Handlers;
 using TicketAPI_Models;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<SqlRepo>();
@@ -14,7 +15,7 @@ string? connString = builder.Configuration.GetValue<string>("ConnectionStrings:s
 // TODO: API Documentation
 
 // App instance
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -26,6 +27,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+GetHandler get = new GetHandler(connString);
+
 // Get all tickets
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connString));
 
@@ -35,15 +38,21 @@ app.MapGet("/tickets/pending", (SqlRepo repo) => repo.getPendingTickets(connStri
 // Get one ticket
 app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) =>
 {
-    List<Ticket>? response = repo.getTicketById(connString, ticketId);
-    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound(response);
+    List<Ticket>? response = repo.getAllTickets(connString);
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
 });
 
+app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) =>
+{
+    return get.GetTicketById(repo, ticketId);
+});
+
+// TODO: Refactor methods to this
 // Get one pending ticket
 app.MapGet("/tickets/pending/{id}", (SqlRepo repo, int ticketId) =>
 {
     List<Ticket>? response = repo.getSinglePending(connString, ticketId);
-    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Invalid ticket id");
 });
 
 // Get employee's tickets
