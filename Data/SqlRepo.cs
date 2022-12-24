@@ -107,26 +107,23 @@ namespace TicketAPI_Data
 
         public List<Ticket> getSinglePending(string connString, int ticketId)
         {
+            string cmdText = @"
+                SELECT *
+                FROM [View.PendingTickets]
+                WHERE ticket_id = @id
+                AND (SELECT COUNT(*) FROM [View.PendingTickets] WHERE ticket_id = @id) > 0;";
             using SqlConnection connection = new SqlConnection(connString);
-            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", ticketId);
+            connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-
             List<Ticket> result = new List<Ticket>();
-            bool exists = checkPendingTickets(connString, ticketId);
-            if (exists)
+            while (reader.Read())
             {
-                connection.Open();
-                while (reader.Read())
-                {
-                    result.Add(BuildTicket(reader));
-                }
-                reader.Close();
+                result.Add(BuildTicket(reader));
             }
             return result;
         }
-
 
         public IResult addTicket(string connString, Ticket ticket)
         {
