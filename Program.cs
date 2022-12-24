@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TicketAPI_Data;
 using TicketAPI_Models;
@@ -7,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<SqlRepo>();
 
-var connString = builder.Configuration.GetValue<string>("ConnectionStrings:sqlConnection");
+string? connString = builder.Configuration.GetValue<string>("ConnectionStrings:sqlConnection");
 
 // App instance
 var app = builder.Build();
@@ -22,6 +24,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// TODO: API Documentation
 // Get all tickets
 app.MapGet("/tickets", (SqlRepo repo) => repo.getAllTickets(connString));
 
@@ -32,7 +35,7 @@ app.MapGet("/tickets/pending", (SqlRepo repo) => repo.getPendingTickets(connStri
 app.MapGet("/tickets/{id}", (SqlRepo repo, int ticketId) =>
 {
     var response = repo.getTicketById(connString, ticketId);
-    return (response.Count >= 1) ? Results.Ok() : Results.NotFound();
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound(response);
 });
 
 // Get all employee tickets
@@ -43,7 +46,10 @@ app.MapGet("/tickets/emptickets/{id}", (SqlRepo repo, int userId) =>
 });
 
 // Get single pending
-app.MapGet("/tickets/pending/{id}", (SqlRepo repo, int ticketId) => repo.getSinglePending(connString, ticketId));
+app.MapGet("/tickets/pending/{id}", (SqlRepo repo, int ticketId) => {
+    var response = repo.getSinglePending(connString, ticketId);
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
+});
 
 
 app.Run();
