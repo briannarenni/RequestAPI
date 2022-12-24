@@ -1,10 +1,9 @@
 // * Account & Ticket Repos
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
+using System.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,8 +85,6 @@ namespace TicketAPI_Data
             {
                 result.Add(BuildTicket(reader));
             }
-            reader.Close();
-
             return result;
         }
 
@@ -105,45 +102,33 @@ namespace TicketAPI_Data
             {
                 result.Add(BuildTicket(reader));
             }
-            reader.Close();
             return result;
         }
-
-        // public bool checkPendingTickets(string connString, int id)
-        // {
-        //     using SqlConnection connection = new SqlConnection(connString);
-        //     connection.Open();
-
-        //     string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
-        //     using SqlCommand command = new SqlCommand(cmdText, connection);
-        //     command.Parameters.AddWithValue("@id", id);
-        //     using SqlDataReader reader = command.ExecuteReader();
-
-        //     return reader.HasRows;
-        // }
 
         public List<Ticket> getSinglePending(string connString, int ticketId)
         {
             using SqlConnection connection = new SqlConnection(connString);
-            string cmdText = @"
-                SELECT *
-                FROM [View.PendingTickets]
-                WHERE ticket_id = @id
-                AND (SELECT COUNT(*) FROM [View.PendingTickets] WHERE ticket_id = @id) > 0;";
+            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", ticketId);
             using SqlDataReader reader = command.ExecuteReader();
+
             List<Ticket> result = new List<Ticket>();
-            connection.Open();
-            while (reader.Read())
+            bool exists = checkPendingTickets(connString, ticketId);
+            if (exists)
             {
-                result.Add(BuildTicket(reader));
+                connection.Open();
+                while (reader.Read())
+                {
+                    result.Add(BuildTicket(reader));
+                }
+                reader.Close();
             }
-            reader.Close();
             return result;
         }
 
-        public void addTicket(string connString, Ticket ticket)
+
+        public IResult addTicket(string connString, Ticket ticket)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -156,9 +141,11 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@category", ticket.category);
             command.ExecuteNonQuery();
             connection.Close();
+            return Results.NoContent();
+
         }
 
-        public void updateTicketStatus(string connString, string status, int id)
+        public IResult updateTicketStatus(string connString, string status, int id)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -168,6 +155,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@id", id);
             command.ExecuteNonQuery();
             connection.Close();
+            return Results.Created($"/tickets/{id}", status);
         }
 
         // TODO: User Methods

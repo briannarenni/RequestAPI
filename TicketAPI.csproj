@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);DBModels\**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);oldSQLRepo.cs</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
