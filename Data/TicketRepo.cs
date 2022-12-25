@@ -147,7 +147,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@id", id);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/tickets/{id}", $"Ticket {id}: {status}");
+            return Results.Ok($"Ticket {id} has been {status}");
         }
     }
 }

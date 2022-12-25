@@ -13,6 +13,20 @@ namespace TicketAPI_Data
     {
         public UserRepo() { }
 
+        public bool validateRegistration(string connString, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            using SqlDataReader reader = command.ExecuteReader();
+            return reader.HasRows;
+        }
+
+        // Login Methods
         public bool checkUsername(string connString, string username)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -40,7 +54,7 @@ namespace TicketAPI_Data
             return reader.HasRows;
         }
 
-        public static (int?, string?) getUserInfo(string connString, string username)
+        public (int?, string?) getUserInfo(string connString, string username)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -50,18 +64,18 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@username", username);
 
             int userId = 0;
-            string empName = "";
+            string userName = "";
 
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
                 userId = Convert.ToInt32(reader["user_id"]);
-                empName = Convert.ToString(reader["username"]);
+                userName = Convert.ToString(reader["username"]);
             }
-            return (userId, empName);
+            return (userId, userName);
         }
 
-        public void addUser(string connString, string username, string password)
+        public IResult addUser(string connString, string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -75,10 +89,32 @@ namespace TicketAPI_Data
 
             command.ExecuteNonQuery();
             connection.Close();
+            return Results.Created($"/tickets", "Ticket submitted succesfully");
+
         }
 
+        // TODO: Get all Employees
+        // public List<User> getAllEmployees(string connString)
+        // {
+        //     string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
+        //     using SqlConnection connection = new SqlConnection(connString);
+        //     using SqlCommand command = new SqlCommand(cmdText, connection);
+
+        //     connection.Open();
+        //     using SqlDataReader reader = command.ExecuteReader();
+        //     List<Ticket> result = new List<Ticket>();
+
+        //     while (reader.Read())
+        //     {
+        //         result.Add(BuildTicket(reader));
+        //     }
+        //     reader.Close();
+
+        //     return result;
+        // }
+
         // ? TODO: Add method to give manager perms
-        public static bool getPerms(string connString, string username)
+        public bool getPerms(string connString, string username)
         {
             bool isManager = false;
             using SqlConnection connection = new SqlConnection(connString);
