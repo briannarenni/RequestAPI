@@ -22,10 +22,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     builder.Configuration.AddUserSecrets<Program>();
 }
-
 app.UseHttpsRedirection();
 
-// Methods
+// User Methods
+// TODO: check username
+// TODO: check password
+// TODO: get user info
+// TODO: add user to db
+
+// Ticket Methods
 app.MapGet("/tickets", (TicketRepo tRepo) => tRepo.getAllTickets(connString));
 
 app.MapGet("/tickets/pending", (TicketRepo tRepo) => tRepo.getPendingTickets(connString));
@@ -53,10 +58,5 @@ app.MapPost("/tickets", (TicketRepo tRepo, Ticket ticket) => tRepo.addTicket(con
 
 // * Use in docs: status string and int id;
 app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
-
-//TODO: User Methods
-
-
-
 
 app.Run();

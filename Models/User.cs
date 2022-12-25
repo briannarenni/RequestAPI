@@ -6,6 +6,7 @@ namespace TicketAPI_Models
         public string? username { get; set; }
         string? password { get; set; }
         public bool? isManager { get; set; } // Filled by DB
+        // TODO: Add count of pending/all tickets (and to SQL)
 
         // Constructors
         public User() { }

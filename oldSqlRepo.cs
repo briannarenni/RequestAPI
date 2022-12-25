@@ -77,7 +77,7 @@ namespace TicketAPI_Data
             return isManager;
         }
 
-        public static void addUser(string username, string password)
+        public static void addUser(string connString, string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -93,9 +93,8 @@ namespace TicketAPI_Data
             connection.Close();
         }
 
-        public static (int, bool) getUserInfo(string username)
+        public static (int, bool) getUserInfo(string connString, string username)
         {
-            // add id and pending tickets to User
             int userId = 0;
             bool isManager = false;
 

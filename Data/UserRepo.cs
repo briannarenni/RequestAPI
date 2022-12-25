@@ -11,39 +11,91 @@ namespace TicketAPI_Data
 {
     public class UserRepo
     {
-        public UserRepo() {}
-        // TODO: User Methods
-        // Builds ticket objects to add to List<Ticket>
-        // private Ticket BuildTicket(SqlDataReader reader)
-        // {
-        //     Ticket ticket = new Ticket();
-        //     ticket.ticketId = (int)reader["ticket_id"];
-        //     ticket.submittedOn = Convert.ToDateTime(reader["submitted_on"]).Date;
-        //     ticket.submittedBy = Convert.ToInt32(reader["submitted_by"]);
-        //     ticket.employeeName = reader["employee_name"].ToString();
-        //     ticket.amount = (double?)(decimal)reader["amount"];
-        //     ticket.category = reader["category"].ToString();
-        //     ticket.status = reader["status"].ToString();
+        public UserRepo() { }
 
-        //     return ticket;
-        // }
-
-        public List<Ticket> getAllTickets(string connString)
+        public bool checkUsername(string connString, string username)
         {
-            string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-
             connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
 
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            using SqlDataReader reader = command.ExecuteReader();
+
+            return reader.HasRows;
+        }
+
+        public bool checkPassword(string connString, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+            using SqlDataReader reader = command.ExecuteReader();
+            return reader.HasRows;
+        }
+
+        public static (int?, string?) getUserInfo(string connString, string username)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+
+            string cmdText = @"SELECT user_id, username FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            int userId = 0;
+            string empName = "";
+
+            SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                // result.Add(BuildTicket(reader));
+                userId = Convert.ToInt32(reader["user_id"]);
+                empName = Convert.ToString(reader["username"]);
             }
-            reader.Close();
-            return result;
+            return (userId, empName);
+        }
+
+        public void addUser(string connString, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"INSERT INTO [User] ([username], [password])
+                VALUES (@username, @password);";
+
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        // ? TODO: Add method to give manager perms
+        public static bool getPerms(string connString, string username)
+        {
+            bool isManager = false;
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+
+            string cmdText = @"SELECT is_manager FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                int isManagerInt = Convert.ToInt32(reader["is_manager"]);
+                isManager = isManagerInt % 2 != 0;
+
+            }
+            return isManager;
         }
     }
 }
