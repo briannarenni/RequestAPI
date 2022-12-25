@@ -2,10 +2,10 @@ namespace TicketAPI_Models
 {
     public class User
     {
-        public int? userId { get; set; } // Filled by DB
+        public int? userId { get; set; }
         public string? username { get; set; }
         string? password { get; set; }
-        public bool? isManager { get; set; } // Filled by DB
+        public bool? isManager { get; set; }
 
         // Constructors
         public User() { }
