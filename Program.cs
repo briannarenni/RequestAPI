@@ -11,8 +11,6 @@ builder.Services.AddTransient<TicketRepo>();
 builder.Services.AddTransient<UserRepo>();
 string? connString = builder.Configuration.GetValue<string>("ConnectionStrings:sqlConnection");
 
-// TODO: API Documentation
-
 // App instance
 WebApplication? app = builder.Build();
 
@@ -64,6 +62,12 @@ app.MapGet("/tickets", (TicketRepo tRepo) => tRepo.getAllTickets(connString));
 
 app.MapGet("/tickets/pending", (TicketRepo tRepo) => tRepo.getPendingTickets(connString));
 
+app.MapGet("/tickets/{id}", (TicketRepo tRepo, int ticketId) =>
+{
+    List<Ticket>? response = tRepo.getAllTickets(connString);
+    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Invalid ticket id");
+});
+
 app.MapGet("/tickets/pending/{id}", (TicketRepo tRepo, int ticketId) =>
 {
     List<Ticket>? response = tRepo.getSinglePending(connString, ticketId);
@@ -76,17 +80,11 @@ app.MapGet("/tickets/employee/{id}", (TicketRepo tRepo, int userId) =>
     return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
 });
 
-// TODO: Refactor Post/Put to take values only:
-// * Use in docs: Ticket newTicket = new Ticket(userId, username, amount, category);
-app.MapPost("/tickets", (TicketRepo tRepo, Ticket ticket) => tRepo.addTicket(connString, ticket));
-
-// * Use in docs: status string and int id;
-app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
-
-app.MapGet("/tickets/{id}", (TicketRepo tRepo, int ticketId) =>
-{
-    List<Ticket>? response = tRepo.getAllTickets(connString);
-    return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Invalid ticket id");
+app.MapPost("/tickets", (TicketRepo tRepo, int userId, string username, double amount, string category) => {
+    Ticket newTicket = new Ticket(userId, username, amount, category);
+    tRepo.addTicket(connString, newTicket);
 });
+
+app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
 
 app.Run();

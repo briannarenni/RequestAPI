@@ -12,8 +12,8 @@ namespace TicketAPI_Data
     {
         public TicketRepo() { }
 
-        // Builds ticket objects to add to List<Ticket>
-        private Ticket BuildTicket(SqlDataReader reader)
+        // builds ticket objects to add to List<Ticket>
+        private Ticket buildTicket(SqlDataReader reader)
         {
             Ticket ticket = new Ticket();
             ticket.ticketId = (int)reader["ticket_id"];
@@ -23,7 +23,6 @@ namespace TicketAPI_Data
             ticket.amount = (double?)(decimal)reader["amount"];
             ticket.category = reader["category"].ToString();
             ticket.status = reader["status"].ToString();
-
             return ticket;
         }
 
@@ -39,7 +38,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                result.Add(BuildTicket(reader));
+                result.Add(buildTicket(reader));
             }
             reader.Close();
             return result;
@@ -58,7 +57,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                result.Add(BuildTicket(reader));
+                result.Add(buildTicket(reader));
             }
             reader.Close();
 
@@ -79,7 +78,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                result.Add(BuildTicket(reader));
+                result.Add(buildTicket(reader));
             }
             return result;
         }
@@ -96,7 +95,7 @@ namespace TicketAPI_Data
 
             while (reader.Read())
             {
-                result.Add(BuildTicket(reader));
+                result.Add(buildTicket(reader));
             }
             return result;
         }
@@ -116,7 +115,7 @@ namespace TicketAPI_Data
             List<Ticket> result = new List<Ticket>();
             while (reader.Read())
             {
-                result.Add(BuildTicket(reader));
+                result.Add(buildTicket(reader));
             }
             return result;
         }
@@ -134,7 +133,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@category", ticket.category);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/tickets", "Ticket submitted succesfully");
+            return Results.Created($"/tickets", "Request submitted succesfully");
         }
 
         public IResult updateTicketStatus(string connString, string status, int id)

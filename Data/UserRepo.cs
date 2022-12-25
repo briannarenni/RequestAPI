@@ -6,7 +6,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using TicketAPI_Models;
 
-// TODO: Add number of all/pending tickets to user info
 namespace TicketAPI_Data
 {
     public class UserRepo
@@ -93,8 +92,8 @@ namespace TicketAPI_Data
 
         }
 
-        // TODO: Get all Employees
-        // public List<User> getAllEmployees(string connString)
+        // * Add getEmployees
+        // public List<User> geEmployees(string connString)
         // {
         //     string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
         //     using SqlConnection connection = new SqlConnection(connString);

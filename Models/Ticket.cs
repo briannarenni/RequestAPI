@@ -10,7 +10,6 @@ namespace TicketAPI_Models
         public string? category { get; set; }
         public string? status { get; set; }
 
-        // Constructors
         public Ticket() { }
 
         public Ticket(int userId, string username, double amount, string category)
