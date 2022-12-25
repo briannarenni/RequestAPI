@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);oldSQLRepo.cs</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);todos.py</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
