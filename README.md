@@ -5,6 +5,6 @@ Originally made to pair with [RequestHandler](https://github.com/briannarenni/Re
 Uses:
 - ASP.NET Core 7
 - Swagger/OpenAPI
-- Azure database
+- SQLServer db
 
 
