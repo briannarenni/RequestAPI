@@ -63,42 +63,26 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public Ticket getTicketById(string connString, int id)
+        public Ticket? getTicketById(string connString, int id)
         {
-            string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
-
+            string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", id);
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-
-            Ticket result = new Ticket();
-            while (reader.Read())
-            {
-                result = Helpers.buildTicket(reader);
-            }
-            return result;
+            return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public Ticket getSinglePending(string connString, int ticketId)
+        public Ticket? getSinglePending(string connString, int ticketId)
         {
-            string cmdText = @"
-                SELECT *
-                FROM [View.PendingTickets]
-                WHERE ticket_id = @id
-                AND (SELECT COUNT(*) FROM [View.PendingTickets] WHERE ticket_id = @id) > 0;";
+            string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", ticketId);
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-            Ticket result = new Ticket();
-            while (reader.Read())
-            {
-                result = Helpers.buildTicket(reader);
-            }
-            return result;
+            return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
         public IResult addTicket(string connString, Ticket ticket)
