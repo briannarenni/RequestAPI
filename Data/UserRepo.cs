@@ -101,7 +101,30 @@ namespace TicketAPI_Data
                 command.Parameters.AddWithValue("@password", pw2);
                 command.ExecuteNonQuery();
                 connection.Close();
-                return Results.Ok("Password updated successfully");
+                return Results.Ok("Password upd˜ated successfully");
+            }
+        }
+
+        public IResult changeRole(string connString, int userId)
+        {
+            bool? currPerms = Helpers.getPerms(connString, userId);
+            bool? newRole = false;
+            if (currPerms == null)
+            {
+                return Results.BadRequest("Invalid User ID");
+            }
+            else
+            {
+                newRole = !currPerms;
+                using SqlConnection connection = new SqlConnection(connString);
+                connection.Open();
+                string cmdText = @"UPDATE [User] SET [is_manager] = @newRole WHERE [user_id] = @userId;";
+                using SqlCommand command = new SqlCommand(cmdText, connection);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@newRole", newRole);
+                command.ExecuteNonQuery();
+                connection.Close();
+                return Results.Ok($"User role changed to {((newRole == true) ? "Manager" : "Employee")}");
             }
         }
     }

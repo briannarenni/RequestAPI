@@ -78,5 +78,16 @@ namespace TicketAPI_Data
             }
             return (numPending, numTickets);
         }
+
+        public static bool? getPerms(string connString, int userId)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"SELECT is_manager FROM [User] WHERE [user_id] = @userId;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@userId", userId);
+            bool isManager = (bool)command.ExecuteScalar();
+            return isManager;
+        }
     }
 }
