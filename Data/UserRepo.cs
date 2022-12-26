@@ -12,6 +12,29 @@ namespace TicketAPI_Data
     {
         public UserRepo() { }
 
+        public User getUserInfo(string connString, string username)
+        {
+            User result = new User();
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                (int, int) ticketCount = Helpers.countTickets(connString, username);
+                string role = Helpers.getRole(connString, username);
+                int pending = ticketCount.Item1;
+                int tickets = ticketCount.Item2;
+                result = Helpers.buildUser(reader, role, pending, tickets);
+            }
+
+            return result;
+        }
+
         public bool validateRegistration(string connString, string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -25,7 +48,7 @@ namespace TicketAPI_Data
             return reader.HasRows;
         }
 
-        // Login Methods
+        // For Login
         public bool checkUsername(string connString, string username)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -40,6 +63,7 @@ namespace TicketAPI_Data
             return reader.HasRows;
         }
 
+        // For Login
         public bool checkPassword(string connString, string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -51,27 +75,6 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@password", password);
             using SqlDataReader reader = command.ExecuteReader();
             return reader.HasRows;
-        }
-
-        public (int?, string?) getUserInfo(string connString, string username)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-
-            string cmdText = @"SELECT user_id, username FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-
-            int userId = 0;
-            string userName = "";
-
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                userId = Convert.ToInt32(reader["user_id"]);
-                userName = Convert.ToString(reader["username"]);
-            }
-            return (userId, userName);
         }
 
         public IResult addUser(string connString, string username, string password)
@@ -92,7 +95,7 @@ namespace TicketAPI_Data
 
         }
 
-        // * Add getEmployees
+        // * Finish adding
         // public List<User> geEmployees(string connString)
         // {
         //     string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
@@ -112,25 +115,6 @@ namespace TicketAPI_Data
         //     return result;
         // }
 
-        // ? TODO: Add method to give manager perms
-        public bool getPerms(string connString, string username)
-        {
-            bool isManager = false;
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
 
-            string cmdText = @"SELECT is_manager FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-
-            using SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                int isManagerInt = Convert.ToInt32(reader["is_manager"]);
-                isManager = isManagerInt % 2 != 0;
-
-            }
-            return isManager;
-        }
     }
 }

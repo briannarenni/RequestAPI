@@ -64,7 +64,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getTicketById(string connString, int id)
+        public Ticket getTicketById(string connString, int id)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id ORDER BY [submitted_on] DESC;";
 
@@ -74,11 +74,11 @@ namespace TicketAPI_Data
 
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
+            Ticket result = new Ticket();
 
             while (reader.Read())
             {
-                result.Add(buildTicket(reader));
+                result = buildTicket(reader);
             }
             return result;
         }
@@ -100,7 +100,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getSinglePending(string connString, int ticketId)
+        public Ticket getSinglePending(string connString, int ticketId)
         {
             string cmdText = @"
                 SELECT *
@@ -112,10 +112,10 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@id", ticketId);
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
+            Ticket result = new Ticket();
             while (reader.Read())
             {
-                result.Add(buildTicket(reader));
+                result = buildTicket(reader);
             }
             return result;
         }
