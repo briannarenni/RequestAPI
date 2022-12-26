@@ -12,6 +12,21 @@ namespace TicketAPI_Data
     {
         public UserRepo() { }
 
+        public IResult validateLogin(string connString, string username, string password)
+        {
+            bool existingUsername = Validators.usernameExists(connString, username);
+            bool correctPassword = Validators.checkPassword(connString, username, password);
+
+            return !existingUsername ? Results.BadRequest("Username doesn't exist.")
+            : (correctPassword ? Results.Ok("Login Successful") : Results.BadRequest("Password incorrect"));
+        }
+
+        public IResult validateRegister(string connString, string username, string password)
+        {
+            bool existingUsername = Validators.usernameExists(connString, username);
+            return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(connString, username, password);
+        }
+
         public User getUserInfo(string connString, string username)
         {
             User user = new User();
@@ -45,7 +60,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@password", password);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/tickets", "Ticket submitted succesfully");
+            return Results.Created($"/users", "Registered successfully");
         }
 
         public List<User> getEmployees(string connString)
@@ -67,44 +82,6 @@ namespace TicketAPI_Data
             }
             reader.Close();
             return result;
-        }
-
-        public bool validateRegistration(string connString, string username, string password)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
-        }
-
-        // * public bool validateLogin(string connString, string username, string password) {}
-
-        // For Login
-        public bool checkUsername(string connString, string username)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
-        }
-
-        // For Login
-        public bool checkPassword(string connString, string username, string password)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
         }
 
         public IResult updatePassword(string connString, string username, string pw1, string pw2)

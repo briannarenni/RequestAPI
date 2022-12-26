@@ -23,41 +23,14 @@ if (app.Environment.IsDevelopment())
 }
 
 // USER METHODS
-// Get user's account info
-app.MapGet("/users/{username}", (UserRepo uRepo, string username) => uRepo.getUserInfo(connString, username));
-
 // Login verification
-app.MapGet("/users/login", (UserRepo uRepo, string username, string password) =>
-{
-    bool usernameExists = uRepo.checkUsername(connString, username);
-    bool passwordCorrect = false;
-
-// ! string "Username not found" "Password not found"
-    if (!usernameExists)
-    {
-        return Results.BadRequest("Username not found");
-    }
-    else
-    {
-        passwordCorrect = uRepo.checkPassword(connString, username, password);
-        return (passwordCorrect) ? Results.Ok() : Results.BadRequest("Password incorrect");
-    }
-});
+app.MapGet("/users/login", (UserRepo uRepo, string username, string password) => uRepo.validateLogin(connString, username, password));
 
 // Register verification
-app.MapGet("users/register", (UserRepo uRepo, string username, string password) =>
-{
-    bool usernameAvailable = !uRepo.validateRegistration(connString, username, password);
-    if (usernameAvailable)
-    {
-        uRepo.addUser(connString, username, password);
-        return Results.Created($"/users", "User registered successfully");
-    }
-    else
-    {
-        return Results.BadRequest("Username already exists");
-    }
-});
+app.MapGet("users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(connString, username, password));
+
+// Get user's account info
+app.MapGet("/users/{username}", (UserRepo uRepo, string username) => uRepo.getUserInfo(connString, username));
 
 // Get all employees
 app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees(connString));
