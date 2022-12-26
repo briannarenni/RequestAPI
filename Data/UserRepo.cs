@@ -33,42 +33,6 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public bool validateRegistration(string connString, string username, string password)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
-        }
-
-        // For Login
-        public bool checkUsername(string connString, string username)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
-        }
-
-        // For Login
-        public bool checkPassword(string connString, string username, string password)
-        {
-            using SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.HasRows;
-        }
-
         public IResult addUser(string connString, string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -105,5 +69,63 @@ namespace TicketAPI_Data
             return result;
         }
 
+        public bool validateRegistration(string connString, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            using SqlDataReader reader = command.ExecuteReader();
+            return reader.HasRows;
+        }
+
+        // * public bool validateLogin(string connString, string username, string password) {}
+
+        // For Login
+        public bool checkUsername(string connString, string username)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            using SqlDataReader reader = command.ExecuteReader();
+            return reader.HasRows;
+        }
+
+        // For Login
+        public bool checkPassword(string connString, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString);
+            connection.Open();
+            string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+            using SqlDataReader reader = command.ExecuteReader();
+            return reader.HasRows;
+        }
+
+        public IResult updatePassword(string connString, string username, string pw1, string pw2)
+        {
+            bool passwordsMatch = Validators.matchPasswords(pw1, pw2);
+            if (!passwordsMatch)
+            {
+                return Results.BadRequest("Passwords do not match. Please enter again.");
+            }
+            else
+            {
+                using SqlConnection connection = new SqlConnection(connString);
+                connection.Open();
+                string cmdText = @"UPDATE [User] SET [password] = @password WHERE [username] = @username;";
+                using SqlCommand command = new SqlCommand(cmdText, connection);
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@password", pw2);
+                command.ExecuteNonQuery();
+                connection.Close();
+                return Results.Ok("Password updated successfully");
+            }
+        }
     }
 }

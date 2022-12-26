@@ -7,7 +7,7 @@ using TicketAPI_Models;
 
 namespace TicketAPI_Data
 {
-    public static class Helpers
+    public class Helpers
     {
         public static Ticket buildTicket(SqlDataReader reader)
         {

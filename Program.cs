@@ -23,12 +23,6 @@ if (app.Environment.IsDevelopment())
 }
 
 // USER METHODS
-// Add user
-app.MapPost("/users", (UserRepo uRepo, string username, string password) => uRepo.addUser(connString, username, password));
-
-// Get all employees
-app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees(connString));
-
 // Get user's account info
 app.MapGet("/users/{username}", (UserRepo uRepo, string username) => uRepo.getUserInfo(connString, username));
 
@@ -38,7 +32,7 @@ app.MapGet("/users/login", (UserRepo uRepo, string username, string password) =>
     bool usernameExists = uRepo.checkUsername(connString, username);
     bool passwordCorrect = false;
 
-// string "Username not found" "Password not found"
+// ! string "Username not found" "Password not found"
     if (!usernameExists)
     {
         return Results.BadRequest("Username not found");
@@ -65,17 +59,16 @@ app.MapGet("users/register", (UserRepo uRepo, string username, string password) 
     }
 });
 
+// Get all employees
+app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees(connString));
+
+// Add user
+app.MapPost("/users", (UserRepo uRepo, string username, string password) => uRepo.addUser(connString, username, password));
+
+// Change user's password
+app.MapPut("users/{username}/change-password", (UserRepo uRepo, string username, string pw1, string pw2) => uRepo.updatePassword(connString, username, pw1.Trim(), pw2.Trim()));
+
 // TICKET METHODS
-// Add new ticket
-app.MapPost("/tickets", (TicketRepo tRepo, int userId, string username, double amount, string category) =>
-{
-    Ticket newTicket = new Ticket(userId, username, amount, category);
-    tRepo.addTicket(connString, newTicket);
-});
-
-// Update ticket status
-app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
-
 // Get all tickets
 app.MapGet("/tickets", (TicketRepo tRepo) => tRepo.getAllTickets(connString));
 
@@ -102,5 +95,15 @@ app.MapGet("/tickets/employee/{id}", (TicketRepo tRepo, int userId) =>
     List<Ticket>? response = tRepo.getUserTickets(connString, userId);
     return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound();
 });
+
+// Add new ticket
+app.MapPost("/tickets", (TicketRepo tRepo, int userId, string username, double amount, string category) =>
+{
+    Ticket newTicket = new Ticket(userId, username, amount, category);
+    tRepo.addTicket(connString, newTicket);
+});
+
+// Update ticket status
+app.MapPut("/tickets", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(connString, status, id));
 
 app.Run();
