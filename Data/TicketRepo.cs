@@ -10,37 +10,38 @@ namespace TicketAPI_Data
 {
     public class TicketRepo
     {
-        public TicketRepo() { }
-
-        // builds ticket objects to add to List<Ticket>
-        private Ticket buildTicket(SqlDataReader reader)
-        {
-            Ticket ticket = new Ticket();
-            ticket.ticketId = (int)reader["ticket_id"];
-            ticket.submittedOn = Convert.ToDateTime(reader["submitted_on"]).Date;
-            ticket.submittedBy = Convert.ToInt32(reader["submitted_by"]);
-            ticket.employeeName = reader["employee_name"].ToString();
-            ticket.amount = (double?)(decimal)reader["amount"];
-            ticket.category = reader["category"].ToString();
-            ticket.status = reader["status"].ToString();
-            return ticket;
-        }
+        public TicketRepo() {}
 
         public List<Ticket> getAllTickets(string connString)
         {
             string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
-
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
 
+            List<Ticket> result = new List<Ticket>();
             while (reader.Read())
             {
-                result.Add(buildTicket(reader));
+                result.Add(Helpers.buildTicket(reader));
             }
             reader.Close();
+            return result;
+        }
+
+        public List<Ticket> getPendingTickets(string connString)
+        {
+            string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
+            using SqlConnection connection = new SqlConnection(connString);
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+
+            List<Ticket> result = new List<Ticket>();
+            while (reader.Read())
+            {
+                result.Add(Helpers.buildTicket(reader));
+            }
             return result;
         }
 
@@ -50,17 +51,15 @@ namespace TicketAPI_Data
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@userId", userId);
-
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
 
+            List<Ticket> result = new List<Ticket>();
             while (reader.Read())
             {
-                result.Add(buildTicket(reader));
+                result.Add(Helpers.buildTicket(reader));
             }
             reader.Close();
-
             return result;
         }
 
@@ -71,31 +70,13 @@ namespace TicketAPI_Data
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@id", id);
-
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
+
             Ticket result = new Ticket();
-
             while (reader.Read())
             {
-                result = buildTicket(reader);
-            }
-            return result;
-        }
-
-        public List<Ticket> getPendingTickets(string connString)
-        {
-            string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
-            using SqlConnection connection = new SqlConnection(connString);
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-
-            connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            List<Ticket> result = new List<Ticket>();
-
-            while (reader.Read())
-            {
-                result.Add(buildTicket(reader));
+                result = Helpers.buildTicket(reader);
             }
             return result;
         }
@@ -115,7 +96,7 @@ namespace TicketAPI_Data
             Ticket result = new Ticket();
             while (reader.Read())
             {
-                result = buildTicket(reader);
+                result = Helpers.buildTicket(reader);
             }
             return result;
         }

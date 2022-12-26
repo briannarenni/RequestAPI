@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 
 // USER METHODS
 // Get all employees
-// app.MapGet("users/{employees}", (UserRepo uRepo) => uRepo.getEmployees(connString));
+app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees(connString));
 
 // Get user's account info
 app.MapGet("/users/{username}", (UserRepo uRepo, string username) => uRepo.getUserInfo(connString, username));
@@ -38,6 +38,7 @@ app.MapGet("/users/login", (UserRepo uRepo, string username, string password) =>
     bool usernameExists = uRepo.checkUsername(connString, username);
     bool passwordCorrect = false;
 
+// string "Username not found" "Password not found"
     if (!usernameExists)
     {
         return Results.BadRequest("Username not found");
