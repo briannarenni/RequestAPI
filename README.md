@@ -9,9 +9,9 @@ The API is built on ASP.NET Core 7 and OpenAPI/Swagger. It's connected to an SQL
 - Microsoft.EntityFrameworkCore.Design
 - Microsoft.EntityFrameworkCore.SqlServer
 ## Documentation
-The API is split into 2 major categories for employees and managers: **User** and **Ticket**. Below are the endpoints, and their associated methods.
+The API is split into 2 major categories for employees and managers: **User** and **Ticket**. User endpoints handle account functions, and Ticket endpoints handle reimbursement request functions. Below are the endpoints, and their associated methods.
 ## User Endpoints & Methods
-User endpoints handle account functions for employees and managers.
+User endpoints:
 
 ## Ticket Endpoints & Methods
-Ticket endpoints handle request functions
+Ticket endpoints:
