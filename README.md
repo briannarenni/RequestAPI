@@ -57,6 +57,8 @@ The API is split into 2 endpoint categories:
 
 `/users/{username}/change-password` accepts the current user's `username`, and two matching `password` strings. Both will be checked by the API to confirm match. If the strings don't match, the returned error response will specify that.
 
+---
+
 ### Ticket Endpoints (cont)
 
 `/tickets/employee/{id}` accepts the current user's `id`.
