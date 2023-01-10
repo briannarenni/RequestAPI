@@ -1,9 +1,4 @@
-// * Account & Ticket Repos
-using System;
-using System.Collections;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using TicketAPI_Models;
 
 namespace TicketAPI_Data
