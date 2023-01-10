@@ -9,15 +9,13 @@ Minimal API that handles a basic employee reimbursement request system. _Created
 -   SQLServer database
 -   Hosted on Azure
 
-### Features
+## Features
 
 -   Employees can register a new account to submit requests
 -   Employees can view their submission history
 -   Managers can view, approve, or deny all pending requests
 -   Managers can view all submitted requests
 -   Existing users can reset their account's password
-
----
 
 ## Documentation
 
