@@ -40,7 +40,6 @@ The API is split into 2 endpoint categories:
 | `/tickets/{id}`                     | POST         | View request by id                  |
 | `/tickets/{id}`                     | PATCH        | Update request by id                |
 | `/tickets/pending/{id}`             | PATCH        | Update pending request by id        |
- ------------------------------------------------------------------------------------------
  
 ---
 
