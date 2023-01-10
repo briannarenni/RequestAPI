@@ -2,7 +2,7 @@
 
 Minimal API that handles a basic employee reimbursement request system. _Created in conjunction with [RequestHandler](https://github.com/briannarenni/RequestHandler-221024), a C# console app._
 
-### Built With:
+**Built With:**
 
 -   NET Core 7
 -   Swagger/OpenAPI
@@ -35,15 +35,15 @@ The API is split into 2 endpoint categories:
 | `/users/{username}/change-password` | PATCH        | Changes an existing user's password |
 | `/employees`                        | GET          | Get all employees                   |
 | `/tickets`                          | GET          | Get all requests                    |
-| `/tickets/employee/{id}`            | POST         | Get employee submissions            |
 | `/tickets/pending`                  | GET          | Get all pending requests            |
+| `/tickets/employee/{id}`            | POST         | Get employee submissions            |
 | `/tickets/{id}`                     | POST         | View request by id                  |
 | `/tickets/{id}`                     | PATCH        | Update request by id                |
-| `/tickets/pending/{id}`             | POST         | Update pending request by id        |
+| `/tickets/pending/{id}`             | PATCH        | Update pending request by id        |
 
 ---
 
-### User Endpoints
+### User Endpoints (cont)
 
 `/users/login` accepts a `username` and `password` string. The username will be checked first, then the password, so that any errors returned will specify which input was incorrect.
 
@@ -59,4 +59,10 @@ The API is split into 2 endpoint categories:
 
 `/users/{username}/change-password` accepts the current user's `username`, and two matching `password` strings. Both will be checked by the API to confirm match. If the strings don't match, the returned error response will specify that.
 
-### Ticket Endpoints
+### Ticket Endpoints (cont)
+
+`/tickets/employee/{id}` accepts the current user's `id`.
+
+`/tickets/{id}` accepts any _existing_ ticket id. Use `POST` to view the ticket, and `PATCH` to update its status.
+
+`/tickets/pending/{id}` accepts any _pending_ ticket id, and a `PATCH` request to update its status from pending.
