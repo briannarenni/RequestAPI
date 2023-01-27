@@ -1,13 +1,11 @@
 # Employee Reimbursement API
 
-<sub>_Created in conjunction with [RequestHandler](https://github.com/briannarenni/RequestHandler-221024), a C# console app._</sub>
-
 Minimal API that handles a basic employee reimbursement request system. **Built with:**
 
 -   NET Core 7
 -   Swagger/OpenAPI
--   SQLServer database
--   Hosted on Azure
+-   SQLServer
+-   Azure App Services
 
 ### Features
 
@@ -88,10 +86,6 @@ string status
 
 `/tickets/employee/{id}` accepts the current user's `id`.
 
-`/tickets/{id}` accepts any _existing_ ticket id. Use `POST` to view the ticket, and `PATCH` to update its status.
+`/tickets/{id}` accepts an _existing_ ticket id. Use `POST` to view the ticket, and `PATCH` to update its status.
 
-`/tickets/pending/{id}` accepts any _pending_ ticket id, and a `PATCH` request to update its status from pending.
-
-```
-
-```
+`/tickets/pending/{id}` accepts a _pending_ ticket id, and a `PATCH` request to update its status from pending.
