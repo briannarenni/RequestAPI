@@ -5,27 +5,34 @@ namespace TicketAPI_Data
 {
     public class UserRepo
     {
+        private readonly string? connString;
+
         public UserRepo() { }
 
-        public IResult validateLogin(string connString, string username, string password)
+        public UserRepo(IConfiguration configuration)
         {
-            bool existingUsername = Validators.usernameExists(connString, username);
-            bool correctPassword = Validators.checkPassword(connString, username, password);
+            connString = configuration.GetValue<string>("ConnectionStrings:sqlConnection");
+        }
+
+        public IResult validateLogin(string username, string password)
+        {
+            bool existingUsername = Validators.usernameExists(connString!, username);
+            bool correctPassword = Validators.checkPassword(connString!, username, password);
 
             return !existingUsername ? Results.BadRequest("Username doesn't exist.")
             : (correctPassword ? Results.Ok("Login Successful") : Results.BadRequest("Password incorrect"));
         }
 
-        public IResult validateRegister(string connString, string username, string password)
+        public IResult validateRegister(string username, string password)
         {
-            bool existingUsername = Validators.usernameExists(connString, username);
-            return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(connString, username, password);
+            bool existingUsername = Validators.usernameExists(connString!, username);
+            return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(username, password);
         }
 
-        public User getUserInfo(string connString, string username)
+        public User getUserInfo( string username)
         {
             User user = new User();
-            using SqlConnection connection = new SqlConnection(connString);
+            using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
 
             string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
@@ -34,8 +41,8 @@ namespace TicketAPI_Data
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                (int, int) ticketCount = Helpers.countTickets(connString, username);
-                string role = Helpers.getRole(connString, username);
+                (int, int) ticketCount = Helpers.countTickets(connString!, username);
+                string role = Helpers.getRole(connString!, username);
                 int pending = ticketCount.Item1;
                 int tickets = ticketCount.Item2;
                 user = Helpers.buildUser(reader, role, pending, tickets);
@@ -43,9 +50,9 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public IResult addUser(string connString, string username, string password)
+        public IResult addUser( string username, string password)
         {
-            using SqlConnection connection = new SqlConnection(connString);
+            using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
             string cmdText = @"INSERT INTO [User] ([username], [password])
                 VALUES (@username, @password);";
@@ -58,10 +65,10 @@ namespace TicketAPI_Data
             return Results.Created($"/users", "Registered successfully");
         }
 
-        public List<User> getEmployees(string connString)
+        public List<User> getEmployees()
         {
             string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
-            using SqlConnection connection = new SqlConnection(connString);
+            using SqlConnection connection = new SqlConnection(connString!);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
@@ -69,8 +76,8 @@ namespace TicketAPI_Data
             while (reader.Read())
             {
                 string username = (string)reader.GetValue(1);
-                (int, int) ticketCount = Helpers.countTickets(connString, username);
-                string role = Helpers.getRole(connString, username);
+                (int, int) ticketCount = Helpers.countTickets(connString!, username);
+                string role = Helpers.getRole(connString!, username);
                 int pending = ticketCount.Item1;
                 int tickets = ticketCount.Item2;
                 result.Add(Helpers.buildUser(reader, role, pending, tickets));
@@ -79,7 +86,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public IResult updatePassword(string connString, string username, string pw1, string pw2)
+        public IResult updatePassword( string username, string pw1, string pw2)
         {
             bool passwordsMatch = Validators.matchPasswords(pw1, pw2);
             if (!passwordsMatch)
@@ -88,7 +95,7 @@ namespace TicketAPI_Data
             }
             else
             {
-                using SqlConnection connection = new SqlConnection(connString);
+                using SqlConnection connection = new SqlConnection(connString!);
                 connection.Open();
                 string cmdText = @"UPDATE [User] SET [password] = @password WHERE [username] = @username;";
                 using SqlCommand command = new SqlCommand(cmdText, connection);
@@ -100,9 +107,9 @@ namespace TicketAPI_Data
             }
         }
 
-        public IResult changeRole(string connString, int userId)
+        public IResult changeRole( int userId)
         {
-            bool? currPerms = Helpers.getPerms(connString, userId);
+            bool? currPerms = Helpers.getPerms(connString!, userId);
             bool? newRole = false;
             if (currPerms == null)
             {
@@ -111,7 +118,7 @@ namespace TicketAPI_Data
             else
             {
                 newRole = !currPerms;
-                using SqlConnection connection = new SqlConnection(connString);
+                using SqlConnection connection = new SqlConnection(connString!);
                 connection.Open();
                 string cmdText = @"UPDATE [User] SET [is_manager] = @newRole WHERE [user_id] = @userId;";
                 using SqlCommand command = new SqlCommand(cmdText, connection);

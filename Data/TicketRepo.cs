@@ -5,9 +5,16 @@ namespace TicketAPI_Data
 {
     public class TicketRepo
     {
-        public TicketRepo() {}
+        private readonly string? connString;
 
-        public List<Ticket> getAllTickets(string connString)
+        public TicketRepo() { }
+
+        public TicketRepo(IConfiguration configuration)
+        {
+            connString = configuration.GetValue<string>("ConnectionStrings:sqlConnection");
+        }
+
+        public List<Ticket> getAllTickets()
         {
             string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -24,7 +31,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getPendingTickets(string connString)
+        public List<Ticket> getPendingTickets()
         {
             string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -40,7 +47,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getUserTickets(string connString, int userId)
+        public List<Ticket> getUserTickets( int userId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -58,7 +65,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public Ticket? getTicketById(string connString, int id)
+        public Ticket? getTicketById( int id)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -69,7 +76,7 @@ namespace TicketAPI_Data
             return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public Ticket? getSinglePending(string connString, int ticketId)
+        public Ticket? getSinglePending( int ticketId)
         {
             string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id";
             using SqlConnection connection = new SqlConnection(connString);
@@ -80,7 +87,7 @@ namespace TicketAPI_Data
             return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public IResult addTicket(string connString, Ticket ticket)
+        public IResult addTicket( Ticket ticket)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -96,7 +103,7 @@ namespace TicketAPI_Data
             return Results.Created($"/tickets", "Request submitted succesfully");
         }
 
-        public IResult updateTicketStatus(string connString, string status, int id)
+        public IResult updateTicketStatus( string status, int id)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
