@@ -29,7 +29,7 @@ namespace TicketAPI_Data
             return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(username, password);
         }
 
-        public User getUserInfo( string username)
+        public User getUserInfo(string username)
         {
             User user = new User();
             using SqlConnection connection = new SqlConnection(connString!);
@@ -50,7 +50,7 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public IResult addUser( string username, string password)
+        public IResult addUser(string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
@@ -86,7 +86,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public IResult updatePassword( string username, string pw1, string pw2)
+        public IResult updatePassword(string username, string pw1, string pw2)
         {
             bool passwordsMatch = Validators.matchPasswords(pw1, pw2);
             if (!passwordsMatch)
@@ -103,11 +103,11 @@ namespace TicketAPI_Data
                 command.Parameters.AddWithValue("@password", pw2);
                 command.ExecuteNonQuery();
                 connection.Close();
-                return Results.Ok("Password upd˜ated successfully");
+                return Results.Ok("Password updated successfully");
             }
         }
 
-        public IResult changeRole( int userId)
+        public IResult changeRole(int userId)
         {
             bool? currPerms = Helpers.getPerms(connString!, userId);
             bool? newRole = false;

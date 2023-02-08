@@ -47,7 +47,7 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public List<Ticket> getUserTickets( int userId)
+        public List<Ticket> getUserTickets(int userId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
             using SqlConnection connection = new SqlConnection(connString);
@@ -65,18 +65,18 @@ namespace TicketAPI_Data
             return result;
         }
 
-        public Ticket? getTicketById( int id)
+        public Ticket? getTicketById(int ticketId)
         {
             string cmdText = @"SELECT * FROM [Ticket] WHERE [ticket_id] = @id;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@id", ticketId);
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
             return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public Ticket? getSinglePending( int ticketId)
+        public Ticket? getSinglePending(int ticketId)
         {
             string cmdText = @"SELECT * FROM [View.PendingTickets] WHERE ticket_id = @id";
             using SqlConnection connection = new SqlConnection(connString);
@@ -87,7 +87,7 @@ namespace TicketAPI_Data
             return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public IResult addTicket( Ticket ticket)
+        public IResult addTicket(Ticket ticket)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
@@ -103,17 +103,17 @@ namespace TicketAPI_Data
             return Results.Created($"/tickets", "Request submitted succesfully");
         }
 
-        public IResult updateTicketStatus( string status, int id)
+        public IResult updateTicketStatus(int ticketId, string status)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
             string cmdText = @"UPDATE [Ticket] SET status = @status WHERE ticket_id = @id;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@status", status);
-            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@id", ticketId);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Ok($"Ticket {id} has been {status}");
+            return Results.Ok($"Ticket {ticketId} has been {status}");
         }
     }
 }

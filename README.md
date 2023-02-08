@@ -1,63 +1,27 @@
 # Employee Reimbursement API
 
-Minimal API that handles a basic employee reimbursement request system. **Built with:**
+Minimal API that implements a basic ticketing system to handle employee reimbursement requests and store them in a database.
 
--   NET Core 7
--   Swagger/OpenAPI
--   SQLServer
--   Azure App Services
+*Built with: Net Core 7, Swagger/OpenAPI, SQLServer, and Azure App Services.*
 
-### Features
-
--   Employees can register a new account to submit requests
--   Employees can view their submission history
--   Managers can view, approve, or deny all pending requests
--   Managers can view all submitted requests
--   Existing users can reset their account's password
-
-## Endpoints
-
-_**NOTE:** To avoid erroneous whitespace errors, any user input in a request should be trimmed before being sent._
-
-The API is split into 2 endpoint categories:
-
--   **User endpoints** handle account functions, such as viewing a user's ID and changing their password.
-
--   **Ticket endpoints** handle reimbursement request functions.
-
-Below are all available endpoints and methods. Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoints-in-depth) for details on each endpoint.
-
-| Endpoints                           | HTTP Methods | Action                            |
-| ----------------------------------- | ------------ | --------------------------------- |
-| `/users/register`                   | POST         | Create new employee account       |
-| `/users/login`                      | POST         | Log into existing user account    |
-| `/users/{username}`                 | POST         | Gets current user account details |
-| `/users/{username}/change-password` | PATCH        | Changes existing user's password  |
-| `/employees`                        | GET          | Get all employees                 |
-| `/tickets`                          | GET          | Get all requests                  |
-| `/tickets/pending`                  | GET          | Get all pending requests          |
-| `/tickets/employee/{id}`            | POST         | Get employee submissions          |
-| `/tickets/{id}`                     | POST         | View request by id                |
-| `/tickets/{id}`                     | PATCH        | Update request by id              |
-| `/tickets/pending/{id}`             | PATCH        | Update pending request by id      |
-
+## Features
 ---
+- New employee accounts can be registered
+- Employees can submit new tickets and view their submission history
+- Managers can view all tickets, process pending tickets, and control what users have manager permissions.
 
-# User/Ticket Object Schemas
-
-User:
-
+## Object Schemas
+---
+### User
 ```
 int userId
 string username
-string password
 string role
-int numberOfPendingRequests
-int totalNumberOfSubmittedRequests
+int numberOfPendingTickets
+int totalNumberOfSubmittedTickets
 ```
 
-Ticket:
-
+### Ticket
 ```
 int ticketId
 DateTime submittedOn
@@ -68,24 +32,101 @@ string category
 string status
 ```
 
-# Endpoints In-Depth
+## Endpoints
+---
+**_NOTE: To avoid erroneous whitespace errors, all user input should be trimmed before being sent in a request._**
 
-### User Endpoints
+The API is split into 2 endpoint categories:
 
-`/users/login` accepts a `username` and `password` string. The username will be checked first, then the password, so that any errors returned will specify which input was incorrect.
+-   **User endpoints** to handle user account operations
+-   **Ticket endpoints** to handle reimbursement ticket operatons
 
-`/users/register` accepts a `username` and `password` string. If the given username isn't already registered, the user account will be created with the given password string, and the user can be logged in immediately.
+Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoints-in-depth) for details on each endpoint.
 
-`/users/{username}` accepts the current user's `username` as a string, then returns a `User` object.
+| Endpoints                       | HTTP Method                 | Action                         |
+| ------------------------------- | --------------------------- | ------------------------------ |
+| `/users/register`               | POST                        | Create new employee account    |
+| `/users/login`                  | POST                        | Log into existing user account |
+| `/users/{user}/details`         | POST                        | Get user account details       |
+| `/users/{user}/update-role`     | POST                        | Update user role               |
+| `/users/{user}/update-password` | PATCH                       | Update user password           |
+| `/tickets/{user}`               | POST                        | Get all tickets by user        |
+| `/tickets/submit`               | POST                        | Submit a new ticket            |
+|                                 | **Admin/Manager Endpoints** |
+| `/employees`                    | GET                         | Get a list of all employees    |
+| `tickets/all`                   | GET                         | Get all tickets                |
+| `tickets/open`                  | GET                         | Get all pending tickets        |
+| `/tickets/{ticket}`             | POST                        | Get ticket by ticket id        |
+| `/tickets/{ticket}`             | PATCH                       | Update a ticket's status       |
 
-`/users/{username}/change-password` accepts the current user's `username`, and two matching `password` strings. Both will be checked by the API to confirm match. If the strings don't match, the returned error response will specify that.
+## Endpoints In-Depth
+---
+```
+/users/register
+```
+Accepts a `username` and `password` string to add a new User to the database.
+  - Response &rarr; `200 OK`
+  - Errors &rarr; `400 Username already exists`
 
 ---
 
-### Ticket Endpoints
+```
+/users/login
+```
+Accepts a `username` and `password` string to authenticate user.
+- Returns &rarr; `200 OK`
+- Errors &rarr; `400 Username already exists` or `400 Password incorrect`
 
-`/tickets/employee/{id}` accepts the current user's `id`.
+---
 
-`/tickets/{id}` accepts an _existing_ ticket id. Use `POST` to view the ticket, and `PATCH` to update its status.
+```
+/users/{user}/details
+```
+Accepts the current user's username string to fetch account information.
+- Returns &rarr; `User` object
 
-`/tickets/pending/{id}` accepts a _pending_ ticket id, and a `PATCH` request to update its status from pending.
+---
+
+```
+users/{user}/update-role
+```
+Accepts an existing `userId` to toggle their existing role between **Manager** and **Employee**.
+- Returns &rarr; `200 OK`
+
+---
+
+```
+/users/{username}/update-password
+```
+Accepts the current user's `username`, and two matching `password` strings.
+- Returns &rarr; `200 OK`
+
+---
+
+```
+/tickets/{user}
+```
+Accepts the current user's `userId`.
+- Returns &rarr; Array of `Ticket` objects
+- Errors &rarr; `404 Error: No tickets found. Please check that the user ID is valid.`
+
+---
+
+```
+/tickets/submit
+```
+To create a new ticket: current user's `userId` and `username`, a `decimal` amount, and a category of 'Travel', 'Lodging', 'Food', or 'Other'.
+- Returns &rarr; `201 Request submitted succesfully`
+
+---
+
+```
+/tickets/{ticket}
+```
+
+`POST` - Retrieve a ticket by `ticketId`
+- Returns &rarr; `Ticket`
+- Error &rarr; `404 Error: Invalid ticket id.`
+
+`PATCH` - Update a ticket with `ticketId` and `status` string of either *'approved'* or *'denied'*.
+- Returns &rarr; `200 OK`

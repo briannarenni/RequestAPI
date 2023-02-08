@@ -18,48 +18,45 @@ if (app.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-app.MapGet("/users/login", (UserRepo uRepo, string username, string password) => uRepo.validateLogin(username, password));
+app.MapPost("/users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(username, password));
 
-app.MapGet("users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(username, password));
+app.MapPost("/users/login", (UserRepo uRepo, string username, string password) => uRepo.validateLogin(username, password));
 
-app.MapPost("/users", (UserRepo uRepo, string username, string password) => uRepo.addUser(username, password));
+app.MapPost("/users/{user}/details", (UserRepo uRepo, string username) => uRepo.getUserInfo(username));
 
-app.MapPut("users/{username}/change-password", (UserRepo uRepo, string username, string pw1, string pw2) => uRepo.updatePassword(username, pw1.Trim(), pw2.Trim()));
+app.MapPatch("/users/{user}/update-role", (UserRepo uRepo, int userId) => uRepo.changeRole(userId));
 
-app.MapGet("/users/{username}", (UserRepo uRepo, string username) => uRepo.getUserInfo(username));
-
-app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees());
-
-app.MapPut("users/change-role", (UserRepo uRepo, int userId) => uRepo.changeRole(userId));
-
-app.MapPost("/tickets", (TicketRepo tRepo, int userId, string username, double amount, string category) =>
+app.MapPatch("/users/{user}/update-password", (UserRepo uRepo, string username, string pw1, string pw2) =>
 {
-    Ticket newTicket = new Ticket(userId, username, amount, category);
-    tRepo.addTicket(newTicket);
+    pw1.Trim();
+    pw2.Trim();
+    uRepo.updatePassword(username, pw1, pw2);
 });
 
-app.MapGet("/tickets/employee/{id}", (TicketRepo tRepo, int userId) =>
+app.MapPost("/tickets/{user}", (TicketRepo tRepo, int userId) =>
 {
     List<Ticket>? response = tRepo.getUserTickets(userId);
     return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Error: No tickets found. Please check that the user ID is valid.");
 });
 
-app.MapGet("/tickets", (TicketRepo tRepo) => tRepo.getAllTickets());
+app.MapPost("/tickets/submit", (TicketRepo tRepo, int userId, string username, double amount, string category) =>
+{
+    Ticket newTicket = new Ticket(userId, username, amount, category);
+    tRepo.addTicket(newTicket);
+});
 
-app.MapGet("/tickets/pending", (TicketRepo tRepo) => tRepo.getPendingTickets());
+app.MapGet("/employees", (UserRepo uRepo) => uRepo.getEmployees());
 
-app.MapGet("/tickets/{id}", (TicketRepo tRepo, int ticketId) =>
+app.MapGet("/tickets/all", (TicketRepo tRepo) => tRepo.getAllTickets());
+
+app.MapGet("/tickets/open", (TicketRepo tRepo) => tRepo.getPendingTickets());
+
+app.MapPost("/tickets/{ticket}", (TicketRepo tRepo, int ticketId) =>
 {
     Ticket? response = tRepo.getTicketById(ticketId);
     return (response == null) ? Results.NotFound("Error: Invalid ticket id.") : Results.Ok(response);
 });
 
-app.MapGet("/tickets/pending/{id}", (TicketRepo tRepo, int ticketId) =>
-{
-    Ticket? response = tRepo.getSinglePending(ticketId);
-    return (response == null) ? Results.NotFound("Error: Invalid ticket id.") : Results.Ok(response);
-});
-
-app.MapPut("/tickets/{id}", (TicketRepo tRepo, string status, int id) => tRepo.updateTicketStatus(status, id));
+app.MapPatch("/tickets/{ticket}", (TicketRepo tRepo, int ticketId, string status) => tRepo.updateTicketStatus(ticketId, status));
 
 app.Run();
