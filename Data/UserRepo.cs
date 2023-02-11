@@ -11,7 +11,7 @@ namespace TicketAPI_Data
 
         public UserRepo(IConfiguration configuration)
         {
-            connString = configuration.GetValue<string>("ConnectionStrings:sqlConnection");
+            connString = configuration.GetValue<string>("ConnectionStrings:request-connString");
         }
 
         public IResult validateLogin(string username, string password)
