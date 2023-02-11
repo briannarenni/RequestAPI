@@ -39,9 +39,9 @@ app.MapPost("/tickets/{user}", (TicketRepo tRepo, int userId) =>
     return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Error: No tickets found. Please check that the user ID is valid.");
 });
 
-app.MapPost("/tickets/submit", (TicketRepo tRepo, int userId, string username, double amount, string category) =>
+app.MapPost("/tickets/submit", (TicketRepo tRepo, int userId, string username, double amount, string category, string comments) =>
 {
-    Ticket newTicket = new Ticket(userId, username, amount, category);
+    Ticket newTicket = new Ticket(userId, username, amount, category, comments);
     tRepo.addTicket(newTicket);
 });
 

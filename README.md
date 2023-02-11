@@ -115,7 +115,7 @@ Accepts the current user's `userId`.
 ```
 /tickets/submit
 ```
-To create a new ticket: current user's `userId` and `username`, a `decimal` amount, and a category of 'Travel', 'Lodging', 'Food', or 'Other'.
+To create a new ticket: current user's `userId` and `username`, a `decimal` amount, a `string` category of 'Travel', 'Lodging', 'Food', or 'Other', and a `string` comment of up to 500 chars (comment is optional and can be sent as `null`).
 - Returns &rarr; `201 Request submitted succesfully`
 
 ---

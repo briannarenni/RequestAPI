@@ -91,13 +91,14 @@ namespace TicketAPI_Data
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
-            string cmdText = @"INSERT INTO [Ticket] ([submitted_by], [employee_name], [amount], [category])
-                VALUES (@submittedBy, @employeeName, @amount, @category);";
+            string cmdText = @"INSERT INTO [Ticket] ([submitted_by], [employee_name], [amount], [category], [comments])
+                VALUES (@submittedBy, @employeeName, @amount, @category, @comments);";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@submittedBy", ticket.submittedBy);
             command.Parameters.AddWithValue("@employeeName", ticket.employeeName);
             command.Parameters.AddWithValue("@amount", ticket.amount);
             command.Parameters.AddWithValue("@category", ticket.category);
+            command.Parameters.AddWithValue("@comments", ticket.comments);
             command.ExecuteNonQuery();
             connection.Close();
             return Results.Created($"/tickets", "Request submitted succesfully");

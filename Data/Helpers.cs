@@ -19,6 +19,7 @@ namespace TicketAPI_Data
             ticket.amount = (double?)(decimal)reader["amount"];
             ticket.category = reader["category"].ToString();
             ticket.status = reader["status"].ToString();
+            ticket.comments = reader["comments"].ToString();
             return ticket;
         }
 
