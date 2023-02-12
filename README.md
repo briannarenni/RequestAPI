@@ -48,7 +48,7 @@ Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoin
 | `/users/register`               | POST                        | Create new employee account    |
 | `/users/login`                  | POST                        | Log into existing user account |
 | `/users/{user}/details`         | POST                        | Get user account details       |
-| `/users/{user}/update-role`     | POST                        | Update user role               |
+| `/users/{user}/update-role`     | PATCH                       | Update user role               |
 | `/users/{user}/update-password` | PATCH                       | Update user password           |
 | `/tickets/{user}`               | POST                        | Get all tickets by user        |
 | `/tickets/submit`               | POST                        | Submit a new ticket            |
