@@ -69,13 +69,18 @@ namespace TicketAPI_Data
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@username", username);
             using SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
+            int rowNum = 0;
+            while (reader.Read())
             {
-                numPending = Convert.ToInt32(reader[0]);
-            }
-            if (reader.Read())
-            {
-                numTickets = Convert.ToInt32(reader[0]);
+                if (rowNum == 0)
+                {
+                    numPending = Convert.ToInt32(reader[0]);
+                }
+                else
+                {
+                    numTickets = Convert.ToInt32(reader[0]);
+                }
+                rowNum++;
             }
             return (numPending, numTickets);
         }

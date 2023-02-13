@@ -39,7 +39,7 @@ namespace TicketAPI_Data
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@username", username);
             SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            if (reader.Read())
             {
                 (int, int) ticketCount = Helpers.countTickets(connString!, username);
                 string role = Helpers.getRole(connString!, username);
@@ -48,21 +48,6 @@ namespace TicketAPI_Data
                 user = Helpers.buildUser(reader, role, pending, tickets);
             }
             return user;
-        }
-
-        public IResult addUser(string username, string password)
-        {
-            using SqlConnection connection = new SqlConnection(connString!);
-            connection.Open();
-            string cmdText = @"INSERT INTO [User] ([username], [password])
-                VALUES (@username, @password);";
-
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
-            command.ExecuteNonQuery();
-            connection.Close();
-            return Results.Created($"/users", "Registered successfully");
         }
 
         public List<User> getEmployees()
@@ -84,6 +69,21 @@ namespace TicketAPI_Data
             }
             reader.Close();
             return result;
+        }
+
+        public IResult addUser(string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString!);
+            connection.Open();
+            string cmdText = @"INSERT INTO [User] ([username], [password])
+                VALUES (@username, @password);";
+
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+            command.ExecuteNonQuery();
+            connection.Close();
+            return Results.Created($"/users", "Registered successfully");
         }
 
         public IResult updatePassword(string username, string pw1, string pw2)
