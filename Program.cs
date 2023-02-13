@@ -7,16 +7,27 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<UserRepo>(c => new UserRepo(c.GetService<IConfiguration>()));
 builder.Services.AddTransient<TicketRepo>(c => new TicketRepo(c.GetService<IConfiguration>()));
 
-// App instance
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("*")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     builder.Configuration.AddUserSecrets<Program>();
 }
+
+app.UseCors();
 
 app.MapPost("/users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(username, password));
 
