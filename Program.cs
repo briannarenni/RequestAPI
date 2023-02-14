@@ -29,9 +29,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
-app.MapPost("/users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(username, password));
-
 app.MapPost("/users/login", (UserRepo uRepo, string username, string password) => uRepo.validateLogin(username, password));
+
+app.MapPost("/users/register", (UserRepo uRepo, string username, string password) => uRepo.validateRegister(username, password));
 
 app.MapPost("/users/{user}/details", (UserRepo uRepo, string username) => uRepo.getUserInfo(username));
 
