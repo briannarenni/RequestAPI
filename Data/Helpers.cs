@@ -34,16 +34,16 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public static string getRole(string connString, string username)
+        public static string getRole(string connString, int userId)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
             string role = "";
             int isManager = 0;
 
-            string cmdText = @"SELECT is_manager FROM [User] WHERE username = @username;";
+            string cmdText = @"SELECT is_manager FROM [User] WHERE user_id = @userId;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@userId", userId);
             using SqlDataReader reader = command.ExecuteReader();
 
             if (reader.Read())
@@ -55,19 +55,19 @@ namespace TicketAPI_Data
             return role;
         }
 
-        public static (int, int) countTickets(string connString, string username)
+        public static (int, int) countTickets(string connString, int userId)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
             int numPending = 0;
             int numTickets = 0;
             string cmdText = @"SELECT COUNT(*) AS num_pending FROM [View.PendingTickets]
-                WHERE employee_name = @username
+                WHERE submitted_by = @userId
                 UNION ALL
-                SELECT COUNT(*) AS num_tickets FROM [Ticket] WHERE employee_name = @username";
+                SELECT COUNT(*) AS num_tickets FROM [Ticket] WHERE submitted_by = @userId";
 
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@userId", userId);
             using SqlDataReader reader = command.ExecuteReader();
             int rowNum = 0;
             while (reader.Read())

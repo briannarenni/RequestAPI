@@ -30,34 +30,35 @@ string employeeName
 decimal amount
 string category
 string status
+string comments (can be null)
 ```
 
 ## Endpoints
 ---
 **_NOTE: To avoid erroneous whitespace errors, all user input should be trimmed before being sent in a request._**
 
-The API is split into 2 endpoint categories:
+All endpoints accept a JSON object in a request. The API is split into 2 endpoint categories:
 
 -   **User endpoints** to handle user account operations
 -   **Ticket endpoints** to handle reimbursement ticket operatons
 
 Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoints-in-depth) for details on each endpoint.
 
-| Endpoints                       | HTTP Method                 | Action                         |
-| ------------------------------- | --------------------------- | ------------------------------ |
-| `/users/register`               | POST                        | Create new employee account    |
-| `/users/login`                  | POST                        | Log into existing user account |
-| `/users/{user}/details`         | POST                        | Get user account details       |
-| `/users/{user}/update-role`     | PATCH                       | Update user role               |
-| `/users/{user}/update-password` | PATCH                       | Update user password           |
-| `/tickets/{user}`               | POST                        | Get all tickets by user        |
-| `/tickets/submit`               | POST                        | Submit a new ticket            |
-|                                 | **Admin/Manager Endpoints** |
-| `/employees`                    | GET                         | Get a list of all employees    |
-| `tickets/all`                   | GET                         | Get all tickets                |
-| `tickets/open`                  | GET                         | Get all pending tickets        |
-| `/tickets/{ticket}`             | POST                        | Get ticket by ticket id        |
-| `/tickets/{ticket}`             | PATCH                       | Update a ticket's status       |
+| Endpoints              | HTTP Method                 | Action                         |
+| ---------------------- | --------------------------- | ------------------------------ |
+| `/users/register`      | POST                        | Create new employee account    |
+| `/users/login`         | POST                        | Log into existing user account |
+| `/users/{id}`          | GET                         | Get user account info          |
+| `/users/{id}/role`     | PATCH                       | Update user role               |
+| `/users/{id}/password` | PATCH                       | Update user password           |
+| `/users/{id}/tickets`  | POST                        | Get all tickets by user        |
+| `/tickets/submit`      | POST                        | Submit a new ticket            |
+|                        | **Admin/Manager Endpoints** |
+| `users/employees`      | GET                         | Get a list of all employees    |
+| `tickets/`             | GET                         | Get all tickets                |
+| `tickets/open`         | GET                         | Get all pending tickets        |
+| `/tickets/{id}`        | POST                        | Get ticket by ticket id        |
+| `/tickets/{id}`        | PATCH                       | Update a ticket's status       |
 
 ## Endpoints In-Depth
 ---
@@ -78,17 +79,16 @@ Accepts a `username` and `password` string to authenticate user.
 - Errors &rarr; `400 Username already exists` or `400 Password incorrect`
 
 ---
-
 ```
-/users/{user}/details
+/users/{id}
 ```
-Accepts the current user's username string to fetch account information.
+Accepts the current user's `userId` to fetch account information.
 - Returns &rarr; `User` object
 
 ---
 
 ```
-users/{user}/update-role
+/users/{id}/role
 ```
 Accepts an existing `userId` to toggle their existing role between **Manager** and **Employee**.
 - Returns &rarr; `200 OK`
@@ -96,15 +96,15 @@ Accepts an existing `userId` to toggle their existing role between **Manager** a
 ---
 
 ```
-/users/{username}/update-password
+/users/{id}/password
 ```
-Accepts the current user's `username`, and two matching `password` strings.
+Accepts the current user's `userId`, and two matching `password` strings.
 - Returns &rarr; `200 OK`
 
 ---
 
 ```
-/tickets/{user}
+/users/{id}/tickets
 ```
 Accepts the current user's `userId`.
 - Returns &rarr; Array of `Ticket` objects
@@ -115,17 +115,17 @@ Accepts the current user's `userId`.
 ```
 /tickets/submit
 ```
-To create a new ticket: current user's `userId` and `username`, a `decimal` amount, a `string` category of 'Travel', 'Lodging', 'Food', or 'Other', and a `string` comment of up to 500 chars (comment is optional and can be sent as `null`).
+To create a new Ticket: current user's `userId` and `username`, a `decimal` amount, a `string` category of 'Travel', 'Lodging', 'Food', or 'Other', and a `string` comment of up to 500 chars (comment is optional and can be sent as `null`).
 - Returns &rarr; `201 Request submitted succesfully`
 
 ---
 
 ```
-/tickets/{ticket}
+/tickets/{id}
 ```
-
+Accepts 2 methods:
 `POST` - Retrieve a ticket by `ticketId`
-- Returns &rarr; `Ticket`
+- Returns &rarr; `Ticket` object
 - Error &rarr; `404 Error: Invalid ticket id.`
 
 `PATCH` - Update a ticket with `ticketId` and `status` string of either *'approved'* or *'denied'*.

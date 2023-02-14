@@ -29,20 +29,20 @@ namespace TicketAPI_Data
             return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(username, password);
         }
 
-        public User getUserInfo(string username)
+        public User getUserInfo(int userId)
         {
             User user = new User();
             using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
 
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username;";
+            string cmdText = @"SELECT * FROM [User] WHERE user_id = @userId;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@userId", userId);
             SqlDataReader reader = command.ExecuteReader();
             if (reader.Read())
             {
-                (int, int) ticketCount = Helpers.countTickets(connString!, username);
-                string role = Helpers.getRole(connString!, username);
+                (int, int) ticketCount = Helpers.countTickets(connString!, userId);
+                string role = Helpers.getRole(connString!, userId);
                 int pending = ticketCount.Item1;
                 int tickets = ticketCount.Item2;
                 user = Helpers.buildUser(reader, role, pending, tickets);
@@ -60,9 +60,9 @@ namespace TicketAPI_Data
             List<User> result = new List<User>();
             while (reader.Read())
             {
-                string username = (string)reader.GetValue(1);
-                (int, int) ticketCount = Helpers.countTickets(connString!, username);
-                string role = Helpers.getRole(connString!, username);
+                int userId = (int)reader.GetValue(0);
+                (int, int) ticketCount = Helpers.countTickets(connString!, userId);
+                string role = Helpers.getRole(connString!, userId);
                 int pending = ticketCount.Item1;
                 int tickets = ticketCount.Item2;
                 result.Add(Helpers.buildUser(reader, role, pending, tickets));
