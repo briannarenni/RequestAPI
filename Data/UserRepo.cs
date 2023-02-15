@@ -16,17 +16,39 @@ namespace TicketAPI_Data
 
         public IResult validateLogin(string username, string password)
         {
-            bool existingUsername = Validators.usernameExists(connString!, username);
-            bool correctPassword = Validators.checkPassword(connString!, username, password);
+            bool existingUsername = Validators.checkUsername(connString!, username);
+            bool validPassword = Validators.checkPassword(connString!, username, password);
 
-            return !existingUsername ? Results.BadRequest("Username doesn't exist.")
-            : (correctPassword ? Results.Ok("Login Successful") : Results.BadRequest("Password incorrect"));
+            if (!existingUsername)
+            {
+                return Results.BadRequest("Username incorrect");
+            }
+
+            if (!validPassword)
+            {
+                return Results.BadRequest("Password incorrect");
+            }
+
+            int userId = Helpers.getAuthUser(connString!, username);
+            User authUser = getUserInfo(userId);
+
+            return Results.Ok(authUser);
         }
 
         public IResult validateRegister(string username, string password)
         {
-            bool existingUsername = Validators.usernameExists(connString!, username);
-            return (existingUsername) ? Results.BadRequest("Username already exists") : addUser(username, password);
+            bool existingUsername = Validators.checkUsername(connString!, username);
+
+            if (existingUsername)
+            {
+                return Results.BadRequest("Username already registered");
+            }
+
+            addUser(username, password);
+            int userId = Helpers.getAuthUser(connString!, username);
+            User authUser = getUserInfo(userId);
+
+            return Results.Ok(authUser);
         }
 
         public User getUserInfo(int userId)
@@ -50,27 +72,6 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public List<User> getEmployees()
-        {
-            string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
-            using SqlConnection connection = new SqlConnection(connString!);
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            List<User> result = new List<User>();
-            while (reader.Read())
-            {
-                int userId = (int)reader.GetValue(0);
-                (int, int) ticketCount = Helpers.countTickets(connString!, userId);
-                string role = Helpers.getRole(connString!, userId);
-                int pending = ticketCount.Item1;
-                int tickets = ticketCount.Item2;
-                result.Add(Helpers.buildUser(reader, role, pending, tickets));
-            }
-            reader.Close();
-            return result;
-        }
-
         public IResult addUser(string username, string password)
         {
             using SqlConnection connection = new SqlConnection(connString!);
@@ -83,7 +84,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@password", password);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/users", "Registered successfully");
+            return Results.Ok("Registered successfully");
         }
 
         public IResult updatePassword(string username, string pw1, string pw2)
@@ -128,6 +129,27 @@ namespace TicketAPI_Data
                 connection.Close();
                 return Results.Ok($"User role changed to {((newRole == true) ? "Manager" : "Employee")}");
             }
+        }
+
+        public List<User> getEmployees()
+        {
+            string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
+            using SqlConnection connection = new SqlConnection(connString!);
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            List<User> result = new List<User>();
+            while (reader.Read())
+            {
+                int userId = (int)reader.GetValue(0);
+                (int, int) ticketCount = Helpers.countTickets(connString!, userId);
+                string role = Helpers.getRole(connString!, userId);
+                int pending = ticketCount.Item1;
+                int tickets = ticketCount.Item2;
+                result.Add(Helpers.buildUser(reader, role, pending, tickets));
+            }
+            reader.Close();
+            return result;
         }
     }
 }

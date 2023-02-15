@@ -9,7 +9,7 @@ namespace TicketAPI_Data
     {
         public static bool matchPasswords(string input1, string input2) => input1 == input2;
 
-        public static bool usernameExists(string connString, string username)
+        public static bool checkUsername(string connString, string username)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
