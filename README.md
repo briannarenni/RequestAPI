@@ -65,8 +65,8 @@ Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoin
 ```
 /users/register
 ```
-Accepts a `username` and `password` string to add a new User to the database.
-  - Response &rarr; `200 OK`
+Accepts a `username` and `password` string to add a new User to the database, and returns a User object on success.
+  - Response &rarr; `User` object
   - Errors &rarr; `400 Username already exists`
 
 ---
@@ -74,8 +74,8 @@ Accepts a `username` and `password` string to add a new User to the database.
 ```
 /users/login
 ```
-Accepts a `username` and `password` string to authenticate user.
-- Returns &rarr; `200 OK`
+Accepts a `username` and `password` string to authenticate a user, and returns a User object on success.
+  - Response &rarr; `User` object
 - Errors &rarr; `400 Username already exists` or `400 Password incorrect`
 
 ---
@@ -91,7 +91,7 @@ Accepts the current user's `userId` to fetch account information.
 /users/{id}/role
 ```
 Accepts an existing `userId` to toggle their existing role between **Manager** and **Employee**.
-- Returns &rarr; `200 OK`
+- Returns &rarr; `'User role changed to {new role}'`
 
 ---
 
@@ -99,7 +99,7 @@ Accepts an existing `userId` to toggle their existing role between **Manager** a
 /users/{id}/password
 ```
 Accepts the current user's `userId`, and two matching `password` strings.
-- Returns &rarr; `200 OK`
+- Returns &rarr; `'Password updated successfully'`
 
 ---
 
