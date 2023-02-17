@@ -151,5 +151,26 @@ namespace TicketAPI_Data
             reader.Close();
             return result;
         }
+
+        public List<User> getUsers()
+        {
+            string cmdText = @"SELECT * FROM [User]";
+            using SqlConnection connection = new SqlConnection(connString!);
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            List<User> result = new List<User>();
+            while (reader.Read())
+            {
+                int userId = (int)reader.GetValue(0);
+                (int, int) ticketCount = Helpers.countTickets(connString!, userId);
+                string role = Helpers.getRole(connString!, userId);
+                int pending = ticketCount.Item1;
+                int tickets = ticketCount.Item2;
+                result.Add(Helpers.buildUser(reader, role, pending, tickets));
+            }
+            reader.Close();
+            return result;
+        }
     }
 }

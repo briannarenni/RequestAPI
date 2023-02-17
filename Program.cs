@@ -30,6 +30,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
+app.MapGet("/users", (UserRepo uRepo) => uRepo.getUsers());
+
 app.MapPost("/users/login", (UserRepo uRepo, [FromBody] UserCreds loginData) =>
 {
     string username = loginData.Username;
