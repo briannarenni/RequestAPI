@@ -52,9 +52,12 @@ app.MapGet("users/employees", (UserRepo uRepo) => uRepo.getEmployees());
 
 app.MapPatch("/users/{id}/role", (UserRepo uRepo, int userId) => uRepo.changeRole(userId));
 
-app.MapPatch("/users/{id}/password", (UserRepo uRepo, [FromBody] PasswordUpdate data) =>
+app.MapPatch("/users/{id}/password", (UserRepo uRepo, [FromBody] PasswordUpdate pwData) =>
 {
-    return uRepo.updatePassword(data.Username, data.Password, data.ConfirmPassword);
+    int userId = pwData.UserId;
+    string pw1 = pwData.Password;
+    string pw2 = pwData.ConfirmPassword;
+    return uRepo.updatePassword(userId, pw1, pw2);
 });
 
 app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, int userId) =>
@@ -84,5 +87,5 @@ app.MapPatch("/tickets/{id}", (TicketRepo tRepo, int ticketId, string status) =>
 app.Run();
 
 public record UserCreds(string Username, string Password);
-public record PasswordUpdate(string Username, string Password, string ConfirmPassword);
+public record PasswordUpdate(int UserId, string Password, string ConfirmPassword);
 public record NewTicket(int UserId, string Username, double Amount, string Category, string Comments);

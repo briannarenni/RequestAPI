@@ -87,7 +87,7 @@ namespace TicketAPI_Data
             return Results.Ok("Registered successfully");
         }
 
-        public IResult updatePassword(string username, string pw1, string pw2)
+        public IResult updatePassword(int userId, string pw1, string pw2)
         {
             bool passwordsMatch = Validators.matchPasswords(pw1, pw2);
             if (!passwordsMatch)
@@ -98,9 +98,9 @@ namespace TicketAPI_Data
             {
                 using SqlConnection connection = new SqlConnection(connString!);
                 connection.Open();
-                string cmdText = @"UPDATE [User] SET [password] = @password WHERE [username] = @username;";
+                string cmdText = @"UPDATE [User] SET [password] = @password WHERE [user_id] = @userId;";
                 using SqlCommand command = new SqlCommand(cmdText, connection);
-                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@userId", userId);
                 command.Parameters.AddWithValue("@password", pw2);
                 command.ExecuteNonQuery();
                 connection.Close();
