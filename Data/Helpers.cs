@@ -34,23 +34,6 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public static int getAuthUser(string connString, string username)
-        {
-            int userId = 0;
-            using SqlConnection connection = new SqlConnection(connString!);
-            connection.Open();
-
-            string cmdText = @"SELECT user_id FROM [User] WHERE username = @username;";
-            using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@username", username);
-            SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
-            {
-                userId = Convert.ToInt32(reader["user_id"]);
-            }
-            return userId;
-        }
-
         public static string getRole(string connString, int userId)
         {
             using SqlConnection connection = new SqlConnection(connString);
@@ -111,6 +94,23 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@userId", userId);
             bool isManager = (bool)command.ExecuteScalar();
             return isManager;
+        }
+
+        public static int getAuthUser(string connString, string username)
+        {
+            int userId = 0;
+            using SqlConnection connection = new SqlConnection(connString!);
+            connection.Open();
+
+            string cmdText = @"SELECT user_id FROM [User] WHERE username = @username;";
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@username", username);
+            SqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                userId = Convert.ToInt32(reader["user_id"]);
+            }
+            return userId;
         }
     }
 }
