@@ -28,6 +28,8 @@ namespace TicketAPI_Data
             User user = new User();
             user.userId = (int)reader["user_id"];
             user.username = reader["username"].ToString();
+            user.firstName = reader["first_name"].ToString();
+            user.lastName = reader["last_name"].ToString();
             user.role = role;
             user.numPending = pending;
             user.numTickets = tickets;
