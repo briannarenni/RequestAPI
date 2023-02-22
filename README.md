@@ -15,8 +15,11 @@ Minimal API that implements a basic ticketing system to handle employee reimburs
 ### User
 ```
 int userId
+string firstName
+string lastName
 string username
 string role
+string dept
 int numberOfPendingTickets
 int totalNumberOfSubmittedTickets
 ```
@@ -44,16 +47,16 @@ All endpoints accept a JSON object in a request. The API is split into 2 endpoin
 
 Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoints-in-depth) for details on each endpoint.
 
-| Endpoints              | HTTP Method                 | Action                         |
+| Endpoints                  | HTTP Method                 | Action                         |
 | ---------------------- | --------------------------- | ------------------------------ |
-| `/users/register`      | POST                        | Create new employee account    |
+| `/users/register`       | POST                        | Create new employee account    |
 | `/users/login`         | POST                        | Log into existing user account |
 | `/users/{id}`          | GET                         | Get user account info          |
 | `/users/{id}/role`     | PATCH                       | Update user role               |
 | `/users/{id}/password` | PATCH                       | Update user password           |
 | `/users/{id}/tickets`  | POST                        | Get all tickets by user        |
 | `/tickets/submit`      | POST                        | Submit a new ticket            |
-|                        | **Admin/Manager Endpoints** |
+|                            | **Admin/Manager Endpoints** |
 | `users/employees`      | GET                         | Get a list of all employees    |
 | `tickets/`             | GET                         | Get all tickets                |
 | `tickets/open`         | GET                         | Get all pending tickets        |
@@ -65,7 +68,7 @@ Below are all available endpoints and methods. See [Endpoints In-Depth](#endpoin
 ```
 /users/register
 ```
-Accepts a `username` and `password` string to add a new User to the database, and returns a User object on success.
+Accepts a `firstName`, `lastName`, `username`, `password`, and `dept` string to add a new User to the database. Returns a User object on success.
   - Response &rarr; `User` object
   - Errors &rarr; `400 Username already exists`
 
@@ -115,7 +118,7 @@ Accepts the current user's `userId`.
 ```
 /tickets/submit
 ```
-To create a new Ticket: current user's `userId` and `username`, a `decimal` amount, a `string` category of 'Travel', 'Lodging', 'Food', or 'Other', and a `string` comment of up to 500 chars (comment is optional and can be sent as `null`).
+To create a new Ticket, submit the following: `userId` and `username` of the current user, `decimal` amount, `string` category ('Travel', 'Lodging', 'Food', or 'Other'), and `string` comments of up to 500 chars (comment optional, can be sent as `null`).
 - Returns &rarr; `201 Request submitted succesfully`
 
 ---

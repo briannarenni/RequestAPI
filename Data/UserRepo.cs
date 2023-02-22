@@ -35,7 +35,7 @@ namespace TicketAPI_Data
             return Results.Ok(authUser);
         }
 
-        public IResult validateRegister(string username, string password, string firstName, string lastName)
+        public IResult validateRegister(string firstName, string lastName, string username, string password, string dept)
         {
             bool existingUsername = Validators.checkUsername(connString!, username);
 
@@ -44,7 +44,7 @@ namespace TicketAPI_Data
                 return Results.BadRequest("Username already registered");
             }
 
-            addUser(username, password, firstName, lastName);
+            addUser(firstName, lastName, username, password, dept);
             int userId = Helpers.getAuthUser(connString!, username);
             User authUser = getUserInfo(userId);
 
@@ -72,18 +72,19 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public IResult addUser(string username, string password, string firstName, string lastName)
+        public IResult addUser(string firstName, string lastName, string username, string password, string dept)
         {
             using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
-            string cmdText = @"INSERT INTO [User] ([username], [password], [first_name], [last_name])
-                VALUES (@username, @password, @first_name, @last_name);";
+            string cmdText = @"INSERT INTO [User] ([username], [password], [first_name], [last_name], [dept])
+                VALUES (@username, @password, @first_name, @last_name, @dept);";
 
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@username", username);
             command.Parameters.AddWithValue("@password", password);
             command.Parameters.AddWithValue("@first_name", firstName);
             command.Parameters.AddWithValue("@last_name", lastName);
+            command.Parameters.AddWithValue("@dept", dept);
             command.ExecuteNonQuery();
             connection.Close();
             return Results.Ok("Registered successfully");

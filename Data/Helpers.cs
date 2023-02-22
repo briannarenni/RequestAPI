@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using TicketAPI_Models;
 
 namespace TicketAPI_Data
@@ -31,6 +27,7 @@ namespace TicketAPI_Data
             user.firstName = reader["first_name"].ToString();
             user.lastName = reader["last_name"].ToString();
             user.role = role;
+            user.dept = reader["dept"].ToString();
             user.numPending = pending;
             user.numTickets = tickets;
             return user;

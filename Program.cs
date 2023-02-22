@@ -41,11 +41,12 @@ app.MapPost("/users/login", (UserRepo uRepo, [FromBody] UserCreds loginData) =>
 
 app.MapPost("/users/register", (UserRepo uRepo, [FromBody] NewUser regData) =>
 {
-    string username = regData.Username;
-    string password = regData.Password;
     string firstName = regData.FirstName;
     string lastName = regData.LastName;
-    return uRepo.validateRegister(username, password, firstName, lastName);
+    string username = regData.Username;
+    string password = regData.Password;
+    string dept = regData.Dept;
+    return uRepo.validateRegister(firstName, lastName, username, password, dept);
 });
 
 app.MapGet("/users/{id}", (UserRepo uRepo, int userId) => uRepo.getUserInfo(userId));
@@ -89,6 +90,6 @@ app.MapPatch("/tickets/{id}", (TicketRepo tRepo, int ticketId, string status) =>
 app.Run();
 
 public record UserCreds(string Username, string Password);
-public record NewUser(string Username, string Password, string FirstName, string LastName);
+public record NewUser(string FirstName, string LastName, string Username, string Password, string Dept);
 public record PasswordUpdate(int UserId, string Password, string ConfirmPassword);
 public record NewTicket(int UserId, string Username, double Amount, string Category, string Comments);
