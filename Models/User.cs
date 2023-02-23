@@ -20,7 +20,6 @@ namespace TicketAPI_Models
             this.password = password;
         }
 
-        // ! May not be needed
         public User(int userId, string username, string fName, string lName, string role, string dept, int numPending, int numTickets)
         {
             this.username = username;

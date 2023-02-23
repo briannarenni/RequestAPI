@@ -21,7 +21,7 @@ namespace TicketAPI_Data
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
-            string cmdText = @"SELECT * FROM [User] WHERE username = @username AND password = @password;";
+            string cmdText = @"SELECT * FROM [Password] WHERE username = @username AND password = @password";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@username", username);
             command.Parameters.AddWithValue("@password", password);

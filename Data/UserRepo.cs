@@ -44,8 +44,9 @@ namespace TicketAPI_Data
                 return Results.BadRequest("Username already registered");
             }
 
-            addUser(firstName, lastName, username, password, dept);
+            addUser(firstName, lastName, username, dept);
             int userId = Helpers.getAuthUser(connString!, username);
+            addPassword(userId, username, password);
             User authUser = getUserInfo(userId);
 
             return Results.Ok(authUser);
@@ -72,22 +73,37 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public IResult addUser(string firstName, string lastName, string username, string password, string dept)
+        public IResult addUser(string firstName, string lastName, string username, string dept)
         {
             using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
-            string cmdText = @"INSERT INTO [User] ([username], [password], [first_name], [last_name], [dept])
-                VALUES (@username, @password, @first_name, @last_name, @dept);";
+            string cmdText = @"INSERT INTO [User] ( [first_name], [last_name], [username], [dept])
+                VALUES (@first_name, @last_name, @username, @dept);";
 
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
             command.Parameters.AddWithValue("@first_name", firstName);
             command.Parameters.AddWithValue("@last_name", lastName);
             command.Parameters.AddWithValue("@dept", dept);
             command.ExecuteNonQuery();
             connection.Close();
             return Results.Ok("Registered successfully");
+        }
+
+        public IResult addPassword(int userId, string username, string password)
+        {
+            using SqlConnection connection = new SqlConnection(connString!);
+            connection.Open();
+            string cmdText = @"INSERT INTO [Password] ([user_id], [username], [password])
+        VALUES (@user_id, @username, @password);";
+
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@user_id", userId);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+            command.ExecuteNonQuery();
+            connection.Close();
+            return Results.Ok("Password stored successfully");
         }
 
         public IResult updatePassword(int userId, string pw1, string pw2)
@@ -101,7 +117,7 @@ namespace TicketAPI_Data
             {
                 using SqlConnection connection = new SqlConnection(connString!);
                 connection.Open();
-                string cmdText = @"UPDATE [User] SET [password] = @password WHERE [user_id] = @userId;";
+                string cmdText = @"UPDATE [Password] SET [password] = @password WHERE [user_id] = @userId;";
                 using SqlCommand command = new SqlCommand(cmdText, connection);
                 command.Parameters.AddWithValue("@userId", userId);
                 command.Parameters.AddWithValue("@password", pw2);
