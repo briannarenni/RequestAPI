@@ -45,7 +45,7 @@ app.MapPost("/users/register", (UserRepo uRepo, [FromBody] NewUser regData) =>
     string lastName = regData.LastName;
     string username = regData.Username;
     string password = regData.Password;
-    string dept = regData.Dept;
+    string? dept = regData.Dept;
     return uRepo.validateRegister(firstName, lastName, username, password, dept);
 });
 

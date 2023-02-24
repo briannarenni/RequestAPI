@@ -73,7 +73,7 @@ namespace TicketAPI_Data
             return user;
         }
 
-        public IResult addUser(string firstName, string lastName, string username, string dept)
+        public IResult addUser(string firstName, string lastName, string username, string dept = "")
         {
             using SqlConnection connection = new SqlConnection(connString!);
             connection.Open();
