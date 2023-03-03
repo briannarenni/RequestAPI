@@ -49,11 +49,19 @@ app.MapPost("/users/register", (UserRepo uRepo, [FromBody] NewUser regData) =>
     return uRepo.validateRegister(firstName, lastName, username, password, dept);
 });
 
-app.MapGet("/users/{id}", (UserRepo uRepo, int userId) => uRepo.getUserInfo(userId));
+app.MapGet("/users/{id}", (UserRepo uRepo, [FromBody] UserID data) =>
+{
+    int userId = data.userId;
+    return uRepo.getUserInfo(userId);
+});
 
 app.MapGet("users/employees", (UserRepo uRepo) => uRepo.getEmployees());
 
-app.MapPatch("/users/{id}/role", (UserRepo uRepo, int userId) => uRepo.changeRole(userId));
+app.MapPatch("/users/{id}/role", (UserRepo uRepo, [FromBody] UserID data) =>
+{
+    int userId = data.userId;
+    return uRepo.changeRole(userId);
+});
 
 app.MapPatch("/users/{id}/password", (UserRepo uRepo, [FromBody] PasswordUpdate pwData) =>
 {
@@ -63,8 +71,10 @@ app.MapPatch("/users/{id}/password", (UserRepo uRepo, [FromBody] PasswordUpdate 
     return uRepo.updatePassword(userId, pw1, pw2);
 });
 
-app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, int userId) =>
+app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, [FromBody] UserID data) =>
 {
+    int userId = data.userId;
+
     List<Ticket>? response = tRepo.getUserTickets(userId);
     return (response.Count >= 1) ? Results.Ok(response) : Results.NotFound("Error: No tickets found. Please check that the user ID is valid.");
 });
@@ -79,17 +89,31 @@ app.MapGet("/tickets/", (TicketRepo tRepo) => tRepo.getAllTickets());
 
 app.MapGet("/tickets/open", (TicketRepo tRepo) => tRepo.getPendingTickets());
 
-app.MapPost("/tickets/{id}", (TicketRepo tRepo, int ticketId) =>
+app.MapPost("/tickets/{id}", (TicketRepo tRepo, [FromBody] TicketID data) =>
 {
+    int ticketId = data.ticketId;
     Ticket? response = tRepo.getTicketById(ticketId);
     return (response == null) ? Results.NotFound("Error: Invalid ticket id.") : Results.Ok(response);
 });
 
-app.MapPatch("/tickets/{id}", (TicketRepo tRepo, int ticketId, string status) => tRepo.updateTicketStatus(ticketId, status));
+app.MapPatch("/tickets/{id}", (TicketRepo tRepo, [FromBody] TicketUpdate data) =>
+{
+    int ticketId = data.ticketId;
+    string status = data.status;
+    return tRepo.updateTicketStatus(ticketId, status);
+});
 
 app.Run();
 
+public record UserID(int userId);
+public record TicketID(int ticketId);
+
+public record TicketUpdate(int ticketId, string status);
+
 public record UserCreds(string Username, string Password);
+
 public record NewUser(string FirstName, string LastName, string Username, string Password, string Dept);
+
 public record PasswordUpdate(int UserId, string Password, string ConfirmPassword);
+
 public record NewTicket(int UserId, string Username, double Amount, string Category, string Comments);
