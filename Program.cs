@@ -81,7 +81,7 @@ app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, [FromBody] UserID data) =>
 
 app.MapPost("/tickets/submit", (TicketRepo tRepo, [FromBody] NewTicket data) =>
 {
-    Ticket newTicket = new Ticket(data.UserId, data.Username, data.Amount, data.Category, data.Comments);
+    Ticket newTicket = new Ticket(data.UserId, data.Name, data.Amount, data.Category, data.Comments);
     return tRepo.addTicket(newTicket);
 });
 
@@ -116,4 +116,4 @@ public record NewUser(string FirstName, string LastName, string Username, string
 
 public record PasswordUpdate(int UserId, string Password, string ConfirmPassword);
 
-public record NewTicket(int UserId, string Username, double Amount, string Category, string Comments);
+public record NewTicket(int UserId, string Name, double Amount, string Category, string Comments);
