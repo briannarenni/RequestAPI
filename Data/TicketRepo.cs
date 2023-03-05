@@ -87,21 +87,21 @@ namespace TicketAPI_Data
             return (reader.Read()) ? Helpers.buildTicket(reader) : null;
         }
 
-        public IResult addTicket(Ticket ticket)
+        public IResult addTicket(int submittedBy, string employeeName, double amount, string category, string comments)
         {
             using SqlConnection connection = new SqlConnection(connString);
             connection.Open();
             string cmdText = @"INSERT INTO [Ticket] ([submitted_by], [employee_name], [amount], [category], [comments])
-                VALUES (@submittedBy, @employeeName, @amount, @category, @comments);";
+        VALUES (@submittedBy, @employeeName, @amount, @category, @comments);";
             using SqlCommand command = new SqlCommand(cmdText, connection);
-            command.Parameters.AddWithValue("@submittedBy", ticket.submittedBy);
-            command.Parameters.AddWithValue("@employeeName", ticket.employeeName);
-            command.Parameters.AddWithValue("@amount", ticket.amount);
-            command.Parameters.AddWithValue("@category", ticket.category);
-            command.Parameters.AddWithValue("@comments", ticket.comments);
+            command.Parameters.AddWithValue("@submittedBy", submittedBy);
+            command.Parameters.AddWithValue("@employeeName", employeeName);
+            command.Parameters.AddWithValue("@amount", amount);
+            command.Parameters.AddWithValue("@category", category);
+            command.Parameters.AddWithValue("@comments", comments);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Created($"/tickets", "Request submitted succesfully");
+            return Results.Created($"/tickets", "Request submitted successfully");
         }
 
         public IResult updateTicketStatus(int ticketId, string status)

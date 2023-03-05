@@ -81,8 +81,12 @@ app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, [FromBody] UserID data) =>
 
 app.MapPost("/tickets/submit", (TicketRepo tRepo, [FromBody] NewTicket data) =>
 {
-    Ticket newTicket = new Ticket(data.UserId, data.Name, data.Amount, data.Category, data.Comments);
-    return tRepo.addTicket(newTicket);
+    int submittedBy = data.UserId;
+    string employeeName = data.Name;
+    double amount = data.Amount;
+    string category = data.Category;
+    string comments = data.Comments;
+    return tRepo.addTicket(submittedBy, employeeName, amount, category, comments);
 });
 
 app.MapGet("/tickets/", (TicketRepo tRepo) => tRepo.getAllTickets());
