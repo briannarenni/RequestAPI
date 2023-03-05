@@ -16,7 +16,7 @@ namespace TicketAPI_Data
 
         public List<Ticket> getAllTickets()
         {
-            string cmdText = @"SELECT * FROM [Ticket] ORDER BY [submitted_on] DESC;";
+            string cmdText = @"SELECT * FROM [Ticket] ORDER BY [ticket_id] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             connection.Open();
@@ -33,7 +33,7 @@ namespace TicketAPI_Data
 
         public List<Ticket> getPendingTickets()
         {
-            string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [submitted_on] DESC;";
+            string cmdText = @"SELECT * FROM [View.PendingTickets] ORDER BY [ticket_id] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             connection.Open();
@@ -44,12 +44,13 @@ namespace TicketAPI_Data
             {
                 result.Add(Helpers.buildTicket(reader));
             }
+            reader.Close();
             return result;
         }
 
         public List<Ticket> getUserTickets(int userId)
         {
-            string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId;";
+            string cmdText = @"SELECT * FROM [Ticket] WHERE [submitted_by] = @userId ORDER BY [ticket_id] DESC;";
             using SqlConnection connection = new SqlConnection(connString);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@userId", userId);
