@@ -152,7 +152,7 @@ namespace TicketAPI_Data
 
         public List<User> getEmployees()
         {
-            string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0;";
+            string cmdText = @"SELECT * FROM [User] WHERE [is_manager] = 0 ORDER BY [dept];";
             using SqlConnection connection = new SqlConnection(connString!);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             connection.Open();
@@ -173,7 +173,7 @@ namespace TicketAPI_Data
 
         public List<User> getUsers()
         {
-            string cmdText = @"SELECT * FROM [User]";
+            string cmdText = @"SELECT * FROM [User] ORDER BY [dept]";
             using SqlConnection connection = new SqlConnection(connString!);
             using SqlCommand command = new SqlCommand(cmdText, connection);
             connection.Open();

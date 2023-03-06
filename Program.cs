@@ -30,8 +30,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
-app.MapGet("/users", (UserRepo uRepo) => uRepo.getUsers());
-
 app.MapPost("/users/login", (UserRepo uRepo, [FromBody] UserCreds loginData) =>
 {
     string username = loginData.Username;
@@ -55,7 +53,9 @@ app.MapGet("/users/{id}", (UserRepo uRepo, [FromBody] UserID data) =>
     return uRepo.getUserInfo(userId);
 });
 
-app.MapGet("users/employees", (UserRepo uRepo) => uRepo.getEmployees());
+app.MapGet("/users/", (UserRepo uRepo) => uRepo.getUsers());
+
+app.MapGet("/users/employees", (UserRepo uRepo) => uRepo.getEmployees());
 
 app.MapPatch("/users/{id}/role", (UserRepo uRepo, [FromBody] UserID data) =>
 {
