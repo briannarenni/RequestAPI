@@ -161,3 +161,9 @@ Accepts 2 methods:
 `PATCH` - Update a ticket with `ticketId` and `status` string of either _'approved'_ or _'denied'_.
 
 - Returns &rarr; `200 OK`
+
+```
+/users/{id}/password/view
+```
+
+A utility endpoint that accepts the current user's `userId` and returns their account password.

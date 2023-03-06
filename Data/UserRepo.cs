@@ -191,5 +191,23 @@ namespace TicketAPI_Data
             reader.Close();
             return result;
         }
+
+        public string getPassword(int userId)
+        {
+            string? storedPassword = "";
+            using SqlConnection connection = new SqlConnection(connString!);
+            string cmdText = @"SELECT * FROM [Password] WHERE [user_id] = @userId;";
+            connection.Open();
+            using SqlCommand command = new SqlCommand(cmdText, connection);
+            command.Parameters.AddWithValue("@userId", userId);
+            using SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                storedPassword = reader["password"].ToString();
+            }
+            reader.Close();
+            return storedPassword;
+        }
     }
 }

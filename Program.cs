@@ -71,6 +71,7 @@ app.MapPatch("/users/{id}/password", (UserRepo uRepo, [FromBody] PasswordUpdate 
     return uRepo.updatePassword(userId, pw1, pw2);
 });
 
+
 app.MapPost("/users/{id}/tickets", (TicketRepo tRepo, [FromBody] UserID data) =>
 {
     int userId = data.userId;
@@ -87,6 +88,12 @@ app.MapPost("/tickets/submit", (TicketRepo tRepo, [FromBody] NewTicket data) =>
     string category = data.Category;
     string comments = data.Comments;
     return tRepo.addTicket(submittedBy, employeeName, amount, category, comments);
+});
+
+app.MapPost("/users/{id}/password/view", (UserRepo uRepo, [FromBody] UserID data) =>
+{
+    int userId = data.userId;
+    return uRepo.getPassword(userId);
 });
 
 app.MapGet("/tickets/", (TicketRepo tRepo) => tRepo.getAllTickets());
