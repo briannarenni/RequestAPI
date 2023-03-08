@@ -11,7 +11,7 @@ namespace TicketAPI_Data
 
         public TicketRepo(IConfiguration configuration)
         {
-            connString = configuration.GetValue<string>("ConnectionStrings:request-connString");
+            connString = configuration.GetValue<string>("ConnectionStrings:RequestDB");
         }
 
         public List<Ticket> getAllTickets()
