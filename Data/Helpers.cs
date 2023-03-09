@@ -91,8 +91,13 @@ namespace TicketAPI_Data
             string cmdText = @"SELECT is_manager FROM [User] WHERE [user_id] = @userId;";
             using SqlCommand command = new SqlCommand(cmdText, connection);
             command.Parameters.AddWithValue("@userId", userId);
-            bool isManager = (bool)command.ExecuteScalar();
+            var result = command.ExecuteScalar();
+
+            if (result == null) return null;
+
+            bool isManager = (bool)result;
             return isManager;
+
         }
 
         public static int getAuthUser(string connString, string username)

@@ -115,7 +115,7 @@ namespace TicketAPI_Data
             command.Parameters.AddWithValue("@id", ticketId);
             command.ExecuteNonQuery();
             connection.Close();
-            return Results.Ok($"Ticket {ticketId} has been {status}");
+            return Results.Ok($"#{ticketId} updated to {status}");
         }
     }
 }
