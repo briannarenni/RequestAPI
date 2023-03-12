@@ -3,10 +3,13 @@ using TicketAPI_Data;
 using TicketAPI_Models;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 builder.Services.AddTransient<UserRepo>(c => new UserRepo(c.GetService<IConfiguration>()));
 builder.Services.AddTransient<TicketRepo>(c => new TicketRepo(c.GetService<IConfiguration>()));
+string? connString = builder.Configuration.GetValue<string>("ConnectionStrings:RequestDB");
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
@@ -25,7 +28,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    builder.Configuration.AddUserSecrets<Program>();
 }
 
 app.UseCors();
@@ -54,7 +56,7 @@ app.MapGet("/users/{id}", (UserRepo uRepo, [FromBody] UserID data) =>
     return uRepo.getUserInfo(userId);
 });
 
-app.MapGet("/users/", (UserRepo uRepo) => uRepo.getUsers());
+app.MapGet("/users", (UserRepo uRepo) => uRepo.getUsers());
 
 app.MapGet("/users/employees", (UserRepo uRepo) => uRepo.getEmployees());
 

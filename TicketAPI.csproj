@@ -7,10 +7,6 @@
     <UserSecretsId>293145f0-70be-4949-b034-56ee5d887a07</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);todos.py</DefaultItemExcludes>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
